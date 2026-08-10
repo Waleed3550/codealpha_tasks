@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>REAL TIME OBJECT DETECTION & TRACKING</title>
+    <!-- Modern Typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="/static/css/style.css">
+    <!-- SweetAlert for sleek notifications -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+</head>
+<body>
+    <!-- Abstract Background -->
+    <div class="bg-abstract"></div>
+
+    <div class="dashboard-layout">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="brand-icon"><i class="fa-solid fa-radar"></i></div>
+                <h1>NEXUS</h1>
+            </div>
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active" data-target="dashboard">
+                    <i class="fa-solid fa-border-all"></i> Dashboard
+                </a>
+                <a href="#" class="nav-item" data-target="dashboard">
+                    <i class="fa-solid fa-camera"></i> Live Detection
+                </a>
+                <a href="#" class="nav-item" data-target="dashboard">
+                    <i class="fa-solid fa-video"></i> Video Processing
+                </a>
+                <a href="#" class="nav-item" data-target="dashboard">
+                    <i class="fa-solid fa-chart-pie"></i> Statistics
+                </a>
+                <a href="#" class="nav-item" data-target="sessions">
+                    <i class="fa-solid fa-clock-rotate-left"></i> History
+                </a>
+                <a href="#" class="nav-item" data-target="settings" id="nav-settings">
+                    <i class="fa-solid fa-gear"></i> Settings
+                </a>
+            </nav>
+            <div class="sidebar-footer">
+                <div class="status-indicator">
+                    <span class="pulse-dot green" id="sys-pulse"></span>
+                    <span id="sys-status-text">System Online</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-view">
+            <!-- Topbar -->
+            <header class="topbar">
+                <div class="page-title">
+                    <h2>REAL TIME OBJECT DETECTION & TRACKING</h2>
+                    <p>YOLO + ByteTrack Computer Vision System</p>
+                </div>
+                <div class="hardware-status">
+                    <div class="hw-badge" id="badge-camera"><i class="fa-solid fa-video"></i> <span>Camera Off</span></div>
+                    <div class="hw-badge" id="badge-yolo"><i class="fa-solid fa-brain"></i> <span>Model Idle</span></div>
+                    <div class="hw-badge" id="badge-record"><i class="fa-solid fa-circle"></i> <span>Rec Off</span></div>
+                </div>
+            </header>
+
+            <!-- Dashboard View -->
+            <div class="view-section active" id="view-dashboard">
+                <!-- Telemetry Cards -->
+                <div class="telemetry-grid">
+                    <div class="glass-card stat-card">
+                        <div class="stat-icon purple"><i class="fa-solid fa-bolt"></i></div>
+                        <div class="stat-content">
+                            <span class="stat-label">Engine FPS</span>
+                            <h3 id="stat-fps">0.0</h3>
+                        </div>
+                    </div>
+                    <div class="glass-card stat-card">
+                        <div class="stat-icon blue"><i class="fa-solid fa-users-viewfinder"></i></div>
+                        <div class="stat-content">
+                            <span class="stat-label">Active Tracks</span>
+                            <h3 id="stat-tracked">0</h3>
+                        </div>
+                    </div>
+                    <div class="glass-card stat-card">
+                        <div class="stat-icon cyan"><i class="fa-solid fa-microchip"></i></div>
+                        <div class="stat-content">
+                            <span class="stat-label">Inference Time</span>
+                            <h3 id="stat-inference">0ms</h3>
+                        </div>
+                    </div>
+                    <div class="glass-card stat-card">
+                        <div class="stat-icon pink"><i class="fa-solid fa-chart-simple"></i></div>
+                        <div class="stat-content">
+                            <span class="stat-label">Total Detections</span>
+                            <h3 id="stat-detections">0</h3>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Layout -->
+                <div class="core-grid">
+                    <!-- Video Player -->
+                    <div class="glass-card video-card">
+                        <div class="card-header">
+                            <h3><i class="fa-solid fa-display"></i> LIVE CAMERA FEED</h3>
+                            <div class="card-actions">
+                                <button class="icon-btn" id="btn-screenshot" title="Take Screenshot"><i class="fa-solid fa-camera"></i></button>
+                                <button class="icon-btn" id="btn-record" title="Toggle Recording"><i class="fa-solid fa-record-vinyl"></i></button>
+                            </div>
+                        </div>
+                        <div class="video-container">
+                            <div class="video-overlay" id="video-overlay">
+                                <div class="idle-state">
+                                    <i class="fa-solid fa-eye-slash"></i>
+                                    <p style="font-size: 1.1rem; margin-bottom: 0.25rem;">Camera is not running</p>
+                                    <span style="font-size: 0.85rem; opacity: 0.6;">Start the camera to begin detection.</span>
+                                </div>
+                            </div>
+                            <img id="video-feed" src="" alt="Live Feed" style="display: none;">
+                        </div>
+                    </div>
+
+                    <!-- Side Panel -->
+                    <div class="side-panel">
+                        <!-- Control Center -->
+                        <div class="glass-card control-card">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-gamepad"></i> SELECT INPUT SOURCE</h3>
+                            </div>
+                            <div class="control-sections">
+                                <!-- Webcam -->
+                                <div class="ctrl-group">
+                                    <h4>USE CAMERA</h4>
+                                    <div class="btn-row">
+                                        <button class="btn primary" id="btn-start-cam"><i class="fa-solid fa-play"></i> START CAMERA</button>
+                                        <button class="btn danger" id="btn-stop-cam" disabled><i class="fa-solid fa-stop"></i> STOP CAMERA</button>
+                                    </div>
+                                </div>
+                                
+                                <div class="divider"></div>
+
+                                <!-- Video Upload -->
+                                <div class="ctrl-group">
+                                    <h4>UPLOAD VIDEO</h4>
+                                    <div class="upload-box">
+                                        <input type="file" id="video-upload" accept=".mp4,.avi,.mov,.mkv" hidden>
+                                        <label for="video-upload" class="upload-label">
+                                            <i class="fa-solid fa-cloud-arrow-up"></i>
+                                            <span id="upload-text">No video selected.</span>
+                                        </label>
+                                    </div>
+                                    <div class="btn-row mt-2">
+                                        <button class="btn primary" id="btn-start-vid" disabled><i class="fa-solid fa-film"></i> START PROCESSING</button>
+                                        <button class="btn danger" id="btn-stop-vid" disabled><i class="fa-solid fa-stop"></i> STOP PROCESSING</button>
+                                    </div>
+                                </div>
+
+                                <div class="divider"></div>
+
+                                <div class="ctrl-group">
+                                    <h4>RECORDING</h4>
+                                    <div class="btn-row">
+                                        <button class="btn primary" id="btn-start-rec"><i class="fa-solid fa-record-vinyl"></i> START RECORDING</button>
+                                        <button class="btn danger" id="btn-stop-rec" disabled><i class="fa-solid fa-stop"></i> STOP RECORDING</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Active Objects -->
+                        <div class="glass-card objects-card mt-3">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-list-check"></i> RECENT DETECTED OBJECTS</h3>
+                            </div>
+                            <div class="table-responsive" style="max-height: 200px; overflow-y: auto;">
+                                <table class="data-table" style="font-size: 0.85rem;">
+                                    <thead>
+                                        <tr>
+                                            <th>ID</th>
+                                            <th>Object</th>
+                                            <th>Conf</th>
+                                            <th>Status</th>
+                                            <th>Time</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="objects-tbody">
+                                        <tr><td colspan="5" class="empty-list">No objects currently tracked.</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <!-- Detailed Statistics -->
+                        <div class="glass-card mt-3">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-chart-bar"></i> Detection Statistics</h3>
+                            </div>
+                            <div class="detailed-stats">
+                                <div class="stat-row"><span>Average Confidence</span> <span id="det-avg-conf">N/A</span></div>
+                                <div class="stat-row"><span>Current FPS</span> <span id="det-fps">N/A</span></div>
+                                <div class="stat-row"><span>Inference Time</span> <span id="det-inf-time">N/A</span></div>
+                                <div class="stat-row"><span>Total Detections</span> <span id="det-total-det">N/A</span></div>
+                                <div class="stat-row"><span>Current Tracked</span> <span id="det-tracked">N/A</span></div>
+                                <div class="stat-row"><span>Processing Time</span> <span id="det-proc-time">N/A</span></div>
+                                <div class="stat-row"><span>Current Input</span> <span id="det-input">N/A</span></div>
+                                <div class="stat-row"><span>Current Session</span> <span id="det-session">N/A</span></div>
+                            </div>
+                        </div>
+
+                        <!-- System Status -->
+                        <div class="glass-card mt-3">
+                            <div class="card-header">
+                                <h3><i class="fa-solid fa-server"></i> System Status</h3>
+                            </div>
+                            <div class="detailed-stats">
+                                <div class="stat-row"><span>CAMERA</span> <span id="sys-cam" class="status-badge stopped">Disconnected</span></div>
+                                <div class="stat-row"><span>YOLO</span> <span id="sys-yolo" class="status-badge stopped">Not Loaded</span></div>
+                                <div class="stat-row"><span>TRACKER</span> <span id="sys-tracker" class="status-badge stopped">Inactive</span></div>
+                                <div class="stat-row"><span>RECORDING</span> <span id="sys-rec" class="status-badge stopped">Not Recording</span></div>
+                                <div class="stat-row"><span>BACKEND</span> <span id="sys-back" class="status-badge completed">Connected</span></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sessions View -->
+            <div class="view-section" id="view-sessions" style="display: none;">
+                <div class="glass-card sessions-card">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-database"></i> Processing History</h3>
+                        <button class="btn outline small" id="btn-refresh-sessions"><i class="fa-solid fa-rotate-right"></i> Refresh</button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="data-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Type</th>
+                                    <th>Source</th>
+                                    <th>Start Time</th>
+                                    <th>Status</th>
+                                    <th>Avg FPS</th>
+                                    <th>Detections</th>
+                                </tr>
+                            </thead>
+                            <tbody id="sessions-tbody">
+                                <tr><td colspan="7" class="empty-list">No processing sessions found.</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    
+                    <div id="pagination-controls" style="display: flex; justify-content: center; gap: 1rem; margin-top: 1rem;">
+                        <button class="btn outline small" id="btn-prev-page" disabled><i class="fa-solid fa-chevron-left"></i> Previous</button>
+                        <span id="page-indicator" style="align-self: center; font-size: 0.9rem; color: var(--text-secondary);">Page 1</span>
+                        <button class="btn outline small" id="btn-next-page" disabled>Next <i class="fa-solid fa-chevron-right"></i></button>
+                    </div>
+                    <!-- Session Details Modal/Pane -->
+                    <div id="session-details" style="display: none; margin-top: 2rem; border-top: 1px solid var(--border-color); padding-top: 1.5rem;">
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 1.5rem;">
+                            <div>
+                                <h3>Session Details <span id="detail-id" style="color: var(--primary);"></span></h3>
+                                <p style="color: var(--text-secondary); font-size: 0.9rem;">Loaded from SQLite backend</p>
+                            </div>
+                            <button class="btn outline small" id="btn-close-details"><i class="fa-solid fa-xmark"></i> Close</button>
+                        </div>
+                        
+                        <div class="detailed-stats" style="margin-bottom: 2rem; background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px;">
+                            <div class="stat-row"><span>Input Type</span> <span id="det-modal-input">N/A</span></div>
+                            <div class="stat-row"><span>Source</span> <span id="det-modal-source">N/A</span></div>
+                            <div class="stat-row"><span>Started</span> <span id="det-modal-start">N/A</span></div>
+                            <div class="stat-row"><span>Completed</span> <span id="det-modal-end">N/A</span></div>
+                            <div class="stat-row"><span>Status</span> <span id="det-modal-status">N/A</span></div>
+                            <div class="stat-row"><span>Total Detections</span> <span id="det-modal-total">N/A</span></div>
+                            <div class="stat-row"><span>Tracked Objects</span> <span id="det-modal-tracked">N/A</span></div>
+                            <div class="stat-row"><span>Avg Confidence</span> <span id="det-modal-conf">N/A</span></div>
+                            <div class="stat-row"><span>Avg FPS</span> <span id="det-modal-fps">N/A</span></div>
+                            <div class="stat-row"><span>Processing Duration</span> <span id="det-modal-duration">N/A</span></div>
+                        </div>
+
+                        <div class="btn-row" style="margin-bottom: 2rem;" id="modal-downloads">
+                            <!-- Download buttons injected here -->
+                        </div>
+
+                        <div id="class-distribution-container" style="margin-bottom: 1.5rem; display: none;">
+                            <strong style="display: block; margin-bottom: 0.5rem;"><i class="fa-solid fa-chart-pie"></i> Class Distribution</strong>
+                            <div id="class-distribution-content" style="display: flex; gap: 0.5rem; flex-wrap: wrap;"></div>
+                        </div>
+
+                        <h4 style="margin-bottom: 1rem;"><i class="fa-solid fa-crosshairs"></i> Detection History</h4>
+                        <div class="table-responsive">
+                            <table class="data-table">
+                                <thead>
+                                    <tr>
+                                        <th>Track ID</th>
+                                        <th>Object</th>
+                                        <th>Confidence</th>
+                                        <th>Frame</th>
+                                        <th>Timestamp</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="detail-tbody">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Settings View -->
+            <div class="view-section" id="view-settings" style="display: none;">
+                <div class="glass-card">
+                    <div class="card-header">
+                        <h3><i class="fa-solid fa-gear"></i> System Settings</h3>
+                        <span style="font-size: 0.85rem; color: var(--text-secondary);">Configure Application Parameters</span>
+                    </div>
+                    <div class="settings-form" style="max-width: 600px; margin-top: 1rem;">
+                        <div class="ctrl-group">
+                            <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Camera Source Index</label>
+                            <input type="number" id="set-camera" class="btn outline" style="width: 100%; text-align: left; padding: 0.75rem; background: var(--bg-dark);" value="0" min="0" max="10">
+                        </div>
+                        <div class="ctrl-group">
+                            <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">YOLO Model</label>
+                            <select id="set-model" class="btn outline" style="width: 100%; text-align: left; padding: 0.75rem; background: var(--bg-dark);" disabled>
+                                <option value="yolov8n.pt">yolov8n.pt (Nano - Fastest)</option>
+                                <option value="yolov8s.pt">yolov8s.pt (Small)</option>
+                            </select>
+                        </div>
+                        <div class="ctrl-group">
+                            <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Confidence Threshold (<span id="conf-val">0.25</span>)</label>
+                            <input type="range" id="set-conf" min="0.1" max="1.0" step="0.05" value="0.25" style="width: 100%;">
+                        </div>
+                        <div class="ctrl-group">
+                            <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Image Size</label>
+                            <select id="set-imgsz" class="btn outline" style="width: 100%; text-align: left; padding: 0.75rem; background: var(--bg-dark);">
+                                <option value="320">320 (Fastest)</option>
+                                <option value="640">640 (Default)</option>
+                            </select>
+                        </div>
+                        <div class="ctrl-group">
+                            <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary);">Device</label>
+                            <select id="set-device" class="btn outline" style="width: 100%; text-align: left; padding: 0.75rem; background: var(--bg-dark);">
+                                <option value="cpu">CPU</option>
+                                <option value="cuda">CUDA (GPU)</option>
+                                <option value="mps">MPS (Mac)</option>
+                            </select>
+                        </div>
+                        <div class="btn-row" style="margin-top: 1.5rem;">
+                            <button class="btn primary" id="btn-save-settings" style="width: 100%;"><i class="fa-solid fa-floppy-disk"></i> SAVE SETTINGS</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="/static/js/app.js"></script>
+</body>
+</html>
