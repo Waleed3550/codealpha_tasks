@@ -1,0 +1,80 @@
+{% load static %}
+{% if ai_assistant_settings.enabled %}
+<div
+  class="ai-assistant"
+  data-assistant-root
+  data-api-url="{{ ai_assistant_api_url }}"
+  data-state-url="{{ ai_assistant_state_url }}"
+  data-wishlist-url="{{ ai_assistant_wishlist_url }}"
+  data-enabled="{{ ai_assistant_settings.enabled|yesno:'true,false' }}"
+  data-voice-enabled="{{ ai_assistant_settings.voice_enabled|yesno:'true,false' }}"
+  data-welcome-message="{{ ai_assistant_settings.welcome_message|escape }}"
+  data-assistant-name="{{ ai_assistant_settings.assistant_name|escape }}"
+>
+  <div class="ai-assistant__toggle-wrapper">
+    <div class="ai-fab-label">
+      <div class="ai-fab-label-title">AI Assistant</div>
+      <div class="ai-fab-label-subtitle">Ask me anything</div>
+    </div>
+    <button class="ai-assistant__toggle ripple" type="button" data-assistant-toggle aria-label="Open AI Shopping Assistant">
+      <span class="ai-assistant__pulse" aria-hidden="true"></span>
+      <i class="fa-solid fa-robot" aria-hidden="true"></i>
+      <div class="ai-assistant__tooltip">
+        <strong>CA-Tech AI Assistant</strong>
+        <span>Available 24/7</span>
+      </div>
+    </button>
+  </div>
+
+  <section class="ai-assistant__panel glass" data-assistant-panel hidden aria-label="AI Shopping Assistant">
+    <header class="ai-assistant__header">
+      <div class="ai-assistant__brand">
+        <span class="ai-avatar ai-avatar--assistant"><i class="fa-solid fa-robot"></i></span>
+        <div>
+          <strong>{{ ai_assistant_settings.assistant_name }}</strong>
+          <span data-assistant-status>Online shopping consultant</span>
+        </div>
+      </div>
+      <div class="ai-assistant__header-actions">
+        <button class="icon-btn ai-icon-btn" type="button" data-assistant-minimize aria-label="Minimize assistant"><i class="fa-solid fa-minus"></i></button>
+        <button class="icon-btn ai-icon-btn" type="button" data-assistant-close aria-label="Close assistant" onclick="var r=this.closest('[data-assistant-root]'); r.classList.remove('is-open', 'is-minimized'); var p=r.querySelector('[data-assistant-panel]'); p.hidden=true; p.setAttribute('aria-hidden', 'true');"><i class="fa-solid fa-xmark"></i></button>
+      </div>
+    </header>
+
+    <div class="ai-assistant__history" data-assistant-messages aria-live="polite" aria-relevant="additions text">
+      <div class="ai-assistant__empty" data-assistant-empty>
+        <span class="ai-avatar ai-avatar--assistant large"><i class="fa-solid fa-microchip"></i></span>
+        <strong>{{ ai_assistant_settings.assistant_name }}</strong>
+        <p>{{ ai_assistant_settings.welcome_message }}</p>
+      </div>
+    </div>
+
+    <div class="ai-assistant__typing" data-assistant-typing hidden>
+      <span></span><span></span><span></span>
+    </div>
+
+    <div class="ai-assistant__voice-status" data-assistant-voice-status hidden>
+      <i class="fa-solid fa-microphone"></i>
+      <span>Listening...</span>
+    </div>
+
+    <form class="ai-assistant__composer" data-assistant-form>
+      <button class="icon-btn ai-icon-btn ai-voice-btn" type="button" data-assistant-voice aria-label="Voice input">
+        <i class="fa-solid fa-microphone"></i>
+      </button>
+      <div class="ai-assistant__field">
+        <textarea name="message" rows="1" placeholder="Message CA-Tech AI..." aria-label="Message CA-Tech AI" data-assistant-input></textarea>
+      </div>
+      <button class="primary-btn ai-send-btn" type="submit">
+        <i class="fa-solid fa-paper-plane"></i>
+      </button>
+    </form>
+
+    <div class="ai-assistant__actions">
+      <button type="button" class="ghost-btn compact" data-assistant-clear><i class="fa-solid fa-broom"></i> Clear Chat</button>
+      <button type="button" class="ghost-btn compact" data-assistant-history><i class="fa-solid fa-clock-rotate-left"></i> History</button>
+      <button type="button" class="ghost-btn compact" data-assistant-mute-toggle><i class="fa-solid fa-volume-high"></i> <span>Mute Audio</span></button>
+    </div>
+  </section>
+</div>
+{% endif %}

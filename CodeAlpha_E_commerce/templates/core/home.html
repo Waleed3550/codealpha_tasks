@@ -1,0 +1,128 @@
+{% extends "base/base.html" %}
+{% block title %}CA-Tech Electronics | Premium Tech Store{% endblock %}
+{% block content %}
+<div class="homepage-nav-wrapper">
+  <div class="container">
+    <div class="category-nav-scroll">
+      <a href="{% url 'products:list' %}" class="nav-pill glass active">
+        <i class="fa-solid fa-border-all"></i> All Products
+      </a>
+      {% for cat in nav_categories %}
+        <a href="{{ cat.get_absolute_url }}" class="nav-pill glass">
+          {{ cat.name }}
+        </a>
+      {% endfor %}
+      <a href="{% url 'products:list' %}?deals=true" class="nav-pill glass highlight">
+        <i class="fa-solid fa-fire"></i> Hot Deals
+      </a>
+    </div>
+  </div>
+</div>
+<section class="hero">
+  <div class="swiper hero-swiper">
+    <div class="swiper-wrapper">
+      <div class="swiper-slide hero-slide" style="--hero-img:url('https://images.unsplash.com/photo-1516321318423-f06f85e504b3?auto=format&fit=crop&w=1800&q=80')">
+        <div class="container hero-content" data-aos="fade-up"><span>Flagship collection</span><h1>CA-Tech Electronics</h1><p>Phones, laptops, gaming systems, displays, and accessories curated for serious everyday performance.</p><a class="primary-btn ripple" href="{% url 'products:list' %}">Shop latest</a></div>
+      </div>
+      <div class="swiper-slide hero-slide" style="--hero-img:url('https://images.unsplash.com/photo-1593642632823-8f785ba67e45?auto=format&fit=crop&w=1800&q=80')">
+        <div class="container hero-content"><span>Workstation grade</span><h1>Laptops That Move Fast</h1><p>Ultra-portables, creator notebooks, and gaming rigs with dependable warranty support.</p><a class="primary-btn ripple" href="{% url 'products:list' %}?category=laptops">Explore laptops</a></div>
+      </div>
+      <div class="swiper-slide hero-slide" style="--hero-img:url('https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=1800&q=80')">
+        <div class="container hero-content"><span>Mobile essentials</span><h1>Upgrade Your Pocket</h1><p>Premium smartphones, watches, earbuds, and charging accessories ready for checkout.</p><a class="primary-btn ripple" href="{% url 'products:list' %}?category=smartphones">View phones</a></div>
+      </div>
+    </div>
+    <div class="swiper-pagination"></div>
+  </div>
+  <div class="scroll-indicator" aria-hidden="true">
+    <div class="mouse"><div class="wheel"></div></div>
+    <span>Scroll</span>
+  </div>
+</section>
+<section class="section container">
+  <div class="section-head"><span>Shop by Category</span><h2>Premium Selection</h2></div>
+  <div class="category-grid premium-categories">
+    <a class="premium-category-card glass" href="/category/laptops/" data-aos="fade-up" data-aos-delay="0">
+      <div class="card-bg" style="background-image: url('https://images.unsplash.com/photo-1593642632823-8f785ba67e45?auto=format&fit=crop&w=800&q=80')"></div>
+      <div class="card-overlay"></div>
+      <div class="card-content">
+        <div class="icon-wrap"><i class="fa-solid fa-laptop"></i></div>
+        <h3>Laptops</h3>
+        <p>MacBooks, Ultra-portables, & Gaming</p>
+        <span class="pill-btn">Shop Now <i class="fa-solid fa-arrow-right"></i></span>
+      </div>
+    </a>
+    <a class="premium-category-card glass" href="/category/smartphones/" data-aos="fade-up" data-aos-delay="100">
+      <div class="card-bg" style="background-image: url('https://images.unsplash.com/photo-1598327105666-5b89351aff97?auto=format&fit=crop&w=800&q=80')"></div>
+      <div class="card-overlay"></div>
+      <div class="card-content">
+        <div class="icon-wrap"><i class="fa-solid fa-mobile-screen"></i></div>
+        <h3>Smartphones</h3>
+        <p>iPhones, Androids, & Accessories</p>
+        <span class="pill-btn">Shop Now <i class="fa-solid fa-arrow-right"></i></span>
+      </div>
+    </a>
+    <a class="premium-category-card glass" href="/category/other-devices/" data-aos="fade-up" data-aos-delay="200">
+      <div class="card-bg" style="background-image: url('https://images.unsplash.com/photo-1605464315542-bda3e2f4e605?auto=format&fit=crop&w=800&q=80')"></div>
+      <div class="card-overlay"></div>
+      <div class="card-content">
+        <div class="icon-wrap"><i class="fa-solid fa-headphones"></i></div>
+        <h3>Other Devices</h3>
+        <p>Tablets, Audio, Watches, & More</p>
+        <span class="pill-btn">Shop Now <i class="fa-solid fa-arrow-right"></i></span>
+      </div>
+    </a>
+  </div>
+</section>
+<section class="section muted-band">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <span>Curated deals</span>
+        <h2>Featured products</h2>
+      </div>
+      <div class="swiper-nav-actions">
+        <button class="icon-btn swiper-prev" aria-label="Previous"><i class="fa-solid fa-arrow-left"></i></button>
+        <button class="icon-btn swiper-next" aria-label="Next"><i class="fa-solid fa-arrow-right"></i></button>
+      </div>
+    </div>
+    <div class="swiper featured-swiper" data-aos="fade-up" style="padding: 1rem 0 2rem;">
+      <div class="swiper-wrapper">
+        {% for product in featured %}
+          <div class="swiper-slide">
+            {% include "products/_product_card.html" %}
+          </div>
+        {% endfor %}
+      </div>
+      <div class="swiper-pagination"></div>
+    </div>
+  </div>
+</section>
+{% if best_sellers %}
+<section class="section container">
+  <div class="section-head">
+    <div>
+      <span>Popular picks</span>
+      <h2>Best sellers</h2>
+    </div>
+  </div>
+  <div class="product-grid">{% for product in best_sellers %}{% include "products/_product_card.html" %}{% endfor %}</div>
+</section>
+{% endif %}
+{% if recently_viewed %}
+<section class="section muted-band">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <span>For you</span>
+        <h2>Recently viewed</h2>
+      </div>
+    </div>
+    <div class="product-grid">{% for product in recently_viewed %}{% include "products/_product_card.html" %}{% endfor %}</div>
+  </div>
+</section>
+{% endif %}
+<section class="section container split-showcase">
+  <div data-aos="fade-right"><span class="eyebrow">Why CA-Tech</span><h2>Premium hardware without confusing checkout.</h2><p>Clear product data, stocked inventory, order tracking, and cash on delivery for customers who want a reliable electronics store.</p></div>
+  <div class="stats-grid" data-aos="fade-left"><div><strong>24h</strong><span>Order processing</span></div><div><strong>8+</strong><span>Trusted brands</span></div><div><strong>COD</strong><span>Payment support</span></div><div><strong>360</strong><span>Product views</span></div></div>
+</section>
+{% endblock %}

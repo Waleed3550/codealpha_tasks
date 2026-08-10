@@ -1,0 +1,19 @@
+{% extends "dashboard/base.html" %}
+{% load localization_tags %}
+{% block title %}{{ order.order_number }} | CA-Tech Admin{% endblock %}
+{% block content %}
+<div class="admin-page-head"><div><span class="eyebrow">Order Management</span><h1>{{ order.order_number }}</h1><p>{{ order.full_name }} / {{ order.email }} / {{ order.phone }}</p></div><a class="ghost-btn" href="{% url 'dashboard:orders' %}">Back to orders</a></div>
+<section class="admin-grid two">
+  <div class="admin-card"><div class="card-head"><h2>Approval Workflow</h2><span>{{ order.get_payment_status_display }} / {{ order.get_status_display }}</span></div><div class="order-action-grid">
+    <form method="post" action="{% url 'dashboard:order_action' order.id 'approve-payment' %}">{% csrf_token %}<button class="primary-btn compact" type="submit">Approve Payment</button></form>
+    <form method="post" action="{% url 'dashboard:order_action' order.id 'reject-payment' %}">{% csrf_token %}<button class="ghost-btn" type="submit">Reject Payment</button></form>
+    <form method="post" action="{% url 'dashboard:order_action' order.id 'processing' %}">{% csrf_token %}<button class="ghost-btn" type="submit">Mark Processing</button></form>
+    <form method="post" action="{% url 'dashboard:order_action' order.id 'shipped' %}">{% csrf_token %}<button class="ghost-btn" type="submit">Mark Shipped</button></form>
+    <form method="post" action="{% url 'dashboard:order_action' order.id 'delivered' %}">{% csrf_token %}<button class="ghost-btn" type="submit">Mark Delivered</button></form>
+    <form method="post" action="{% url 'dashboard:order_action' order.id 'cancel' %}">{% csrf_token %}<button class="ghost-btn danger" type="submit">Cancel Order</button></form>
+  </div></div>
+  <form class="admin-card stack-form" method="post">{% csrf_token %}<input type="hidden" name="action" value="save_notes"><h2>Internal Notes</h2>{{ form.as_p }}<button class="primary-btn compact" type="submit">Save Notes</button></form>
+  <div class="admin-card"><h2>Ordered Products</h2>{% for item in order.items.all %}<div class="admin-list-row"><strong>{{ item.product_name }}</strong><span>{{ item.quantity }} x {{item.unit_price |localize_price:request}}</span><b>{{item.line_total |localize_price:request}}</b></div>{% endfor %}<div class="admin-list-row total"><strong>Total</strong><span></span><b>{{order.grand_total |localize_price:request}}</b></div></div>
+  <div class="admin-card"><h2>Customer & Shipping</h2><div class="status-row"><span>Billing</span><strong>{{ order.billing_address }}</strong></div><div class="status-row"><span>Shipping</span><strong>{{ order.shipping_address }}</strong></div><div class="status-row"><span>City</span><strong>{{ order.city }}, {{ order.state }} {{ order.postal_code }}</strong></div><div class="status-row"><span>Payment</span><strong>{{ order.get_payment_status_display }}</strong></div><div class="status-row"><span>Gateway</span><strong>{% if order.payment_gateway %}{{ order.payment_gateway|title }}{% else %}-{% endif %}</strong></div><div class="status-row"><span>Transaction ID</span><strong>{% if order.transaction_id %}{{ order.transaction_id }}{% else %}-{% endif %}</strong></div></div>
+</section>
+{% endblock %}

@@ -1,0 +1,428 @@
+{% extends "base/base.html" %}
+{% block content %}
+<style>
+/* ── Auth page — Stunning Emerald Layout ─────────────────────────────── */
+.auth-page-wrap {
+  min-height: 88vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  overflow: hidden;
+}
+
+/* ── LEFT PANEL — brand showcase ──────────────────────────────────────── */
+.auth-showcase {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 4rem 3.5rem;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse 80% 70% at 20% 30%, rgba(22,163,74,.35) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 50% at 80% 80%, rgba(132,204,22,.20) 0%, transparent 50%),
+    linear-gradient(135deg, #052e16 0%, #14532d 40%, #166534 100%);
+}
+[data-theme=dark] .auth-showcase {
+  background:
+    radial-gradient(ellipse 80% 70% at 20% 30%, rgba(74,222,128,.18) 0%, transparent 55%),
+    radial-gradient(ellipse 60% 50% at 80% 80%, rgba(163,230,53,.12) 0%, transparent 50%),
+    linear-gradient(135deg, #020d06 0%, #041408 50%, #052e16 100%);
+}
+
+/* Decorative circles */
+.auth-showcase::before {
+  content: '';
+  position: absolute;
+  width: 500px; height: 500px;
+  border-radius: 50%;
+  border: 1px solid rgba(132,204,22,.18);
+  top: -120px; right: -160px;
+  pointer-events: none;
+}
+.auth-showcase::after {
+  content: '';
+  position: absolute;
+  width: 300px; height: 300px;
+  border-radius: 50%;
+  border: 1px solid rgba(74,222,128,.14);
+  bottom: -80px; left: -80px;
+  pointer-events: none;
+}
+
+.auth-showcase-inner { position: relative; z-index: 2; }
+
+.auth-brand-badge {
+  display: inline-flex; align-items: center; gap: .7rem;
+  background: rgba(132,204,22,.15);
+  border: 1px solid rgba(132,204,22,.30);
+  border-radius: 999px; padding: .55rem 1.1rem;
+  color: #a3e635; font-size: .85rem; font-weight: 700;
+  letter-spacing: .04em; text-transform: uppercase;
+  margin-bottom: 1.8rem;
+  backdrop-filter: blur(8px);
+}
+.auth-brand-badge i { font-size: 1rem; color: #a3e635; }
+
+.auth-showcase h2 {
+  font-size: clamp(2.2rem, 4vw, 3.2rem);
+  font-weight: 900; line-height: 1.05;
+  color: white; margin: 0 0 1.2rem;
+  letter-spacing: -.03em;
+}
+.auth-showcase h2 em {
+  font-style: normal;
+  background: linear-gradient(135deg, #4ade80, #a3e635);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.auth-showcase p {
+  color: rgba(255,255,255,.72);
+  font-size: 1.05rem; line-height: 1.65;
+  max-width: 380px; margin-bottom: 2.2rem;
+}
+
+/* Feature list */
+.auth-features { display: grid; gap: .85rem; margin-bottom: 2.5rem; }
+.auth-feature {
+  display: flex; align-items: center; gap: .85rem;
+  color: rgba(255,255,255,.88); font-size: .95rem; font-weight: 500;
+}
+.auth-feature-icon {
+  width: 36px; height: 36px; border-radius: 10px; flex-shrink: 0;
+  background: rgba(74,222,128,.18);
+  border: 1px solid rgba(74,222,128,.28);
+  display: grid; place-items: center;
+  color: #4ade80; font-size: .9rem;
+}
+
+/* Mascot */
+.auth-mascot-container {
+  position: absolute;
+  bottom: 2.5rem; right: 2.5rem;
+  width: 190px; height: 190px;
+  opacity: .92;
+}
+.auth-mascot-container svg { width: 100%; height: 100%; overflow: visible; }
+
+/* Floating stat chips */
+.auth-stat-chips {
+  display: flex; gap: .8rem; flex-wrap: wrap;
+}
+.auth-stat-chip {
+  background: rgba(255,255,255,.09);
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 14px; padding: .6rem 1rem;
+  color: white; backdrop-filter: blur(8px);
+}
+.auth-stat-chip strong { display: block; font-size: 1.2rem; font-weight: 900; color: #4ade80; }
+.auth-stat-chip span { font-size: .78rem; color: rgba(255,255,255,.65); }
+
+/* ── RIGHT PANEL — form ───────────────────────────────────────────────── */
+.auth-form-panel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3rem 3rem;
+  background: var(--bg);
+  position: relative;
+  overflow-y: auto;
+}
+[data-theme=dark] .auth-form-panel {
+  background: var(--bg-2);
+}
+.auth-form-panel::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(ellipse 60% 40% at 80% 20%, rgba(22,163,74,.06) 0%, transparent 55%),
+    radial-gradient(ellipse 50% 40% at 20% 80%, rgba(132,204,22,.04) 0%, transparent 50%);
+  pointer-events: none;
+}
+
+.auth-panel {
+  position: relative; z-index: 1;
+  width: min(440px, 100%);
+  background: var(--surface);
+  border: 1.5px solid var(--line);
+  border-radius: 24px;
+  padding: 2.2rem;
+  box-shadow: var(--shadow-lg), 0 0 0 1px var(--primary-tint-2);
+  backdrop-filter: blur(20px);
+}
+
+/* ── Responsive ────────────────────────────────────────────────────────── */
+@media (max-width: 980px) {
+  .auth-page-wrap { grid-template-columns: 1fr; }
+  .auth-showcase {
+    min-height: 320px;
+    padding: 2.5rem 2rem;
+    align-items: center;
+    text-align: center;
+  }
+  .auth-showcase p { max-width: 100%; margin-inline: auto; }
+  .auth-mascot-container { display: none; }
+  .auth-showcase::before, .auth-showcase::after { display: none; }
+  .auth-stat-chips { justify-content: center; }
+  .auth-features { display: none; }
+  .auth-form-panel { padding: 2.5rem 1.5rem; }
+}
+@media (max-width: 620px) {
+  .auth-showcase { min-height: 240px; padding: 2rem 1.5rem; }
+  .auth-form-panel { padding: 2rem 1rem; }
+  .auth-panel { padding: 1.6rem; border-radius: 20px; }
+  .auth-brand-badge { font-size: .78rem; }
+  .auth-showcase h2 { font-size: 1.9rem; }
+}
+</style>
+
+<div class="auth-page-wrap">
+
+  <!-- ── LEFT: Brand Showcase ─────────────────────────────────────────── -->
+  <div class="auth-showcase">
+    <div class="auth-showcase-inner">
+      <div class="auth-brand-badge">
+        <i class="fa-solid fa-bolt"></i>
+        CA-Tech Electronics
+      </div>
+
+      <h2>
+        Shop the Future,<br>
+        <em>Pay Tomorrow.</em>
+      </h2>
+
+      <p>
+        Premium laptops, smartphones, gaming gear and audio — curated from top brands,
+        delivered fast with transparent pricing.
+      </p>
+
+      <div class="auth-features">
+        <div class="auth-feature">
+          <div class="auth-feature-icon"><i class="fa-solid fa-shield-halved"></i></div>
+          Secure checkout with end-to-end encryption
+        </div>
+        <div class="auth-feature">
+          <div class="auth-feature-icon"><i class="fa-solid fa-truck-fast"></i></div>
+          Express delivery across Pakistan
+        </div>
+        <div class="auth-feature">
+          <div class="auth-feature-icon"><i class="fa-solid fa-rotate-left"></i></div>
+          Easy returns within 14 days
+        </div>
+        <div class="auth-feature">
+          <div class="auth-feature-icon"><i class="fa-solid fa-headset"></i></div>
+          24/7 support via WhatsApp & chat
+        </div>
+      </div>
+
+      <div class="auth-stat-chips">
+        <div class="auth-stat-chip">
+          <strong>300+</strong>
+          <span>Products</span>
+        </div>
+        <div class="auth-stat-chip">
+          <strong>15K+</strong>
+          <span>Customers</span>
+        </div>
+        <div class="auth-stat-chip">
+          <strong>4.9★</strong>
+          <span>Avg. Rating</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Animated Mascot -->
+    <div class="auth-mascot-container">
+      <svg id="tech-mascot" viewBox="0 0 200 200">
+        <defs>
+          <radialGradient id="screen-glow" cx="50%" cy="50%" r="50%">
+            <stop offset="0%"   stop-color="#052e16"/>
+            <stop offset="100%" stop-color="#14532d"/>
+          </radialGradient>
+          <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur stdDeviation="3" result="blur"/>
+            <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+          </filter>
+        </defs>
+        <g id="mascot-body">
+          <ellipse cx="100" cy="180" rx="40" ry="8" fill="rgba(0,0,0,0.18)" id="mascot-shadow"/>
+          <g id="mascot-torso">
+            <line x1="100" y1="45" x2="100" y2="20" stroke="rgba(255,255,255,.4)" stroke-width="4" stroke-linecap="round"/>
+            <circle cx="100" cy="20" r="7" fill="#84cc16" id="mascot-bulb"/>
+            <circle cx="100" cy="20" r="7" fill="#84cc16" filter="url(#glow)" opacity="0.7" id="mascot-bulb-glow"/>
+            <rect x="40" y="45" width="120" height="90" rx="30" fill="rgba(255,255,255,.15)" stroke="rgba(255,255,255,.25)" stroke-width="2"/>
+            <rect x="45" y="50" width="110" height="80" rx="25" fill="rgba(255,255,255,.08)"/>
+            <rect x="52" y="58" width="96" height="64" rx="16" fill="url(#screen-glow)"/>
+            <g id="mascot-eyes-wrap">
+              <g id="eye-l"><ellipse cx="78" cy="86" rx="8" ry="12" fill="#4ade80" filter="url(#glow)" class="eye-shape"/><circle cx="80" cy="82" r="3" fill="#ffffff" opacity="0.9"/></g>
+              <g id="eye-r"><ellipse cx="122" cy="86" rx="8" ry="12" fill="#4ade80" filter="url(#glow)" class="eye-shape"/><circle cx="124" cy="82" r="3" fill="#ffffff" opacity="0.9"/></g>
+              <path id="mascot-mouth" d="M 88 102 Q 100 102 112 102" stroke="#4ade80" stroke-width="3" stroke-linecap="round" fill="transparent" filter="url(#glow)"/>
+            </g>
+            <g id="mascot-tears" opacity="0">
+              <path d="M 78 102 Q 78 112 78 115" stroke="#60a5fa" stroke-width="3" stroke-linecap="round" fill="transparent"/>
+              <path d="M 122 102 Q 122 112 122 115" stroke="#60a5fa" stroke-width="3" stroke-linecap="round" fill="transparent"/>
+            </g>
+            <g id="hand-l"><circle cx="30" cy="110" r="14" fill="rgba(255,255,255,.15)" stroke="rgba(255,255,255,.25)" stroke-width="2"/><circle cx="30" cy="110" r="8" fill="rgba(255,255,255,.08)"/></g>
+            <g id="hand-r"><circle cx="170" cy="110" r="14" fill="rgba(255,255,255,.15)" stroke="rgba(255,255,255,.25)" stroke-width="2"/><circle cx="170" cy="110" r="8" fill="rgba(255,255,255,.08)"/></g>
+          </g>
+        </g>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ── RIGHT: Form Panel ─────────────────────────────────────────────── -->
+  <div class="auth-form-panel">
+    <div class="auth-panel" data-aos="fade-up">
+      {% block auth_content %}{% endblock %}
+    </div>
+  </div>
+
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  if (typeof gsap === 'undefined') return;
+
+  const head = '#mascot-torso', eyesWrap = '#mascot-eyes-wrap',
+        eyeL = '#eye-l .eye-shape', eyeR = '#eye-r .eye-shape',
+        mouth = '#mascot-mouth', tears = '#mascot-tears',
+        handL = '#hand-l', handR = '#hand-r', shadow = '#mascot-shadow',
+        antenna = '#mascot-bulb', antennaGlow = '#mascot-bulb-glow';
+
+  let idleTl = gsap.timeline({ repeat: -1, yoyo: true });
+  idleTl.to(head, { y: -8, duration: 2, ease: "sine.inOut" }, 0)
+         .to(shadow, { scale: 0.9, opacity: 0.4, duration: 2, ease: "sine.inOut", transformOrigin: "center" }, 0);
+
+  gsap.to([antenna, antennaGlow], { fill: '#a3e635', opacity: 1, duration: 1.2, repeat: -1, yoyo: true, ease: "sine.inOut" });
+
+  function blink() {
+    gsap.to([eyeL, eyeR], { scaleY: 0.1, duration: 0.09, transformOrigin: "center", yoyo: true, repeat: 1 });
+    setTimeout(blink, Math.random() * 4000 + 1800);
+  }
+  blink();
+
+  function randomSmile() {
+    gsap.to(mouth, { attr: { d: "M 85 102 Q 100 112 115 102" }, duration: 0.4 });
+    setTimeout(() => { gsap.to(mouth, { attr: { d: "M 88 102 Q 100 102 112 102" }, duration: 0.4 }); }, 2200);
+    setTimeout(randomSmile, Math.random() * 6000 + 4000);
+  }
+  randomSmile();
+
+  let isConfused = false;
+  window.mascotConfused = function() {
+    gsap.to(head, { rotation: 12, duration: 0.4, ease: "back.out(1.5)" });
+    gsap.to(mouth, { attr: { d: "M 90 106 Q 100 102 110 106" }, duration: 0.3 });
+    gsap.to(eyeR, { scaleY: 0.5, duration: 0.3 });
+  };
+  window.mascotUnconfused = function() {
+    gsap.to(head, { rotation: 0, duration: 0.4, ease: "power2.out" });
+    gsap.to(mouth, { attr: { d: "M 88 102 Q 100 102 112 102" }, duration: 0.3 });
+    gsap.to(eyeR, { scaleY: 1, duration: 0.3 });
+    if (document.activeElement && document.activeElement.type === 'password') {
+      gsap.to(handR, { x: -40, y: -25, duration: 0.4, ease: "back.out(1.7)" });
+    }
+  };
+
+  function bindInputEvents(context = document) {
+    const inputs     = context.querySelectorAll('form.stack-form input:not([type="hidden"])');
+    const passInputs = context.querySelectorAll('form.stack-form input[type="password"]');
+
+    passInputs.forEach(input => {
+      input.addEventListener('focus', () => {
+        gsap.to(handL, { x: 40, y: -25, duration: 0.4, ease: "back.out(1.7)" });
+        if (!isConfused) gsap.to(handR, { x: -40, y: -25, duration: 0.4, ease: "back.out(1.7)" });
+        gsap.to(eyesWrap, { y: -2, duration: 0.2 });
+      });
+      input.addEventListener('blur', () => {
+        gsap.to([handL, handR], { x: 0, y: 0, duration: 0.4, ease: "power2.out" });
+        gsap.to(eyesWrap, { x: 0, y: 0, duration: 0.2 });
+      });
+    });
+
+    if (passInputs.length >= 2) {
+      const p1 = passInputs[0], p2 = passInputs[1];
+      const checkMatch = () => {
+        if (p1.value && p2.value && p1.value !== p2.value) {
+          if (!isConfused) { isConfused = true; mascotConfused(); }
+        } else {
+          if (isConfused) { isConfused = false; mascotUnconfused(); }
+        }
+      };
+      p1.addEventListener('input', checkMatch);
+      p2.addEventListener('input', checkMatch);
+    }
+
+    inputs.forEach(input => {
+      if (input.type === 'password') return;
+      input.addEventListener('focus', () => gsap.to(eyesWrap, { x: 8, y: 2, duration: 0.3 }));
+      input.addEventListener('blur',  () => gsap.to(eyesWrap, { x: 0, y: 0, duration: 0.3 }));
+      input.addEventListener('input', (e) => {
+        const mx = Math.min((e.target.value.length / 20) * 12, 12);
+        gsap.to(eyesWrap, { x: mx, duration: 0.1 });
+      });
+    });
+  }
+
+  bindInputEvents();
+
+  window.mascotFail = function() {
+    gsap.to(mouth, { attr: { d: "M 85 108 Q 100 98 115 108" }, duration: 0.4 });
+    gsap.to(eyesWrap, { y: 6, duration: 0.4 });
+    gsap.to([eyeL, eyeR], { fill: '#60a5fa', scaleY: 0.8, duration: 0.4, transformOrigin: "center" });
+    gsap.to(head, { x: -6, duration: 0.08, yoyo: true, repeat: 5, ease: "sine.inOut" });
+    gsap.to(tears, { opacity: 1, y: 5, duration: 0.5, ease: "power1.in", delay: 0.2 });
+  };
+
+  window.mascotIdle = function() {
+    gsap.to(mouth, { attr: { d: "M 88 102 Q 100 102 112 102" }, duration: 0.4 });
+    gsap.to(eyesWrap, { x: 0, y: 0, duration: 0.4 });
+    gsap.to([eyeL, eyeR], { fill: '#4ade80', scaleY: 1, duration: 0.4, transformOrigin: "center" });
+    gsap.to(tears, { opacity: 0, y: 0, duration: 0.3 });
+    gsap.to(head, { x: 0, rotation: 0, duration: 0.5 });
+  };
+
+  window.mascotSuccess = function() {
+    gsap.to(mouth, { attr: { d: "M 82 98 Q 100 115 118 98" }, duration: 0.3 });
+    gsap.to([eyeL, eyeR], { scaleY: 0.2, duration: 0.2, transformOrigin: "center" });
+    idleTl.pause();
+    gsap.to(head,   { y: -40, duration: 0.4, ease: "power2.out", yoyo: true, repeat: 3 });
+    gsap.to(shadow, { scale: 0.6, opacity: 0.2, duration: 0.4, ease: "power2.out", yoyo: true, repeat: 3 });
+    gsap.to(handL, { y: -30, rotation: -45, transformOrigin: "center", duration: 0.3, yoyo: true, repeat: -1 });
+    gsap.to(handR, { y: -30, rotation:  45, transformOrigin: "center", duration: 0.3, yoyo: true, repeat: -1 });
+  };
+
+  const form = document.querySelector('form.stack-form');
+  if (form) {
+    if (document.querySelector('.errorlist, .alert.danger')) {
+      mascotFail();
+      setTimeout(mascotIdle, 3000);
+    }
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = form.querySelector('button[type="submit"]');
+      if (btn) btn.disabled = true;
+      try {
+        const fd = new FormData(form);
+        const url = form.getAttribute('action') || window.location.href;
+        const res = await fetch(url, { method:'POST', body:fd, headers:{'X-Requested-With':'XMLHttpRequest'} });
+        if (res.redirected || res.url !== window.location.href) {
+          mascotSuccess();
+          setTimeout(() => { window.location.href = res.url; }, 1800);
+        } else {
+          const html = await res.text();
+          const doc  = new DOMParser().parseFromString(html,'text/html');
+          const newForm = doc.querySelector('form.stack-form');
+          if (newForm) { form.innerHTML = newForm.innerHTML; isConfused = false; bindInputEvents(form); }
+          if (btn) btn.disabled = false;
+          mascotFail();
+          setTimeout(mascotIdle, 3000);
+        }
+      } catch { form.submit(); }
+    });
+  }
+});
+</script>
+{% endblock %}
+{% block floating_widgets %}{% endblock %}

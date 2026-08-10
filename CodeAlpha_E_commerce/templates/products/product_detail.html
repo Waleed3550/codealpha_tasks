@@ -1,0 +1,33 @@
+{% extends "base/base.html" %}
+{% load localization_tags %}
+{% block title %}{{ product.name }} | CA-Tech{% endblock %}
+{% block meta_description %}{{ product.short_description }}{% endblock %}
+{% block content %}
+<section class="section container product-detail">
+  <div class="gallery glass" data-aos="fade-right">
+    <div class="zoom-wrap"><img id="mainProductImage" src="{{ product.primary_image }}" alt="{{ product.name }}"></div>
+    <div class="thumb-row">{% for image in product.images.all %}<button class="thumb" data-image="{{ image.display_url }}"><img src="{{ image.display_url }}" alt="{{ image.alt_text }}"></button>{% endfor %}</div>
+  </div>
+  <div class="detail-info" data-aos="fade-left">
+    <span class="eyebrow">{{ product.brand.name }} / {{ product.category.name }}</span>
+    <h1>{{ product.name }}</h1>
+    <p>{{ product.short_description }}</p>
+    <div class="rating"><i class="fa-solid fa-star"></i> {{ product.rating }} rating</div>
+    <div class="price-row large"><strong>{{product.price |localize_price:request}}</strong>{% if product.on_sale %}<del>{{product.compare_at_price |localize_price:request}}</del>{% endif %}</div>
+    <form action="{% url 'cart:add' product.id %}" method="post" class="buy-box ajax-cart-form">{% csrf_token %}
+      {% if product.variants.exists %}<label>Variant<select name="variant">{% for variant in product.variants.all %}<option value="{{ variant.id }}">{{ variant.name }}: {{ variant.value }}{% if variant.price_delta %} (+{{variant.price_delta |localize_price:request}}){% endif %}</option>{% endfor %}</select></label>{% endif %}
+      <label>Quantity<input type="number" name="quantity" value="1" min="1" max="99"></label>
+      <div style="display:flex; gap: .75rem; flex-wrap: wrap;">
+        <button class="primary-btn ripple" type="submit" name="action" value="add_to_cart"><i class="fa-solid fa-bag-shopping"></i> Add to cart</button>
+        <button class="ghost-btn ripple" type="submit" name="action" value="buy_now"><i class="fa-solid fa-bolt"></i> Buy Now</button>
+      </div>
+    </form>
+    <div class="spec-list glass"><h2>Specifications</h2>{% for key, value in product.specs.items %}<div><span>{{ key }}</span><strong>{{ value }}</strong></div>{% endfor %}<div><span>Warranty</span><strong>{{ product.warranty }}</strong></div><div><span>Stock</span><strong>{{ product.stock }} available</strong></div></div>
+  </div>
+</section>
+<section class="section container"><div class="section-head"><span>Details</span><h2>Product overview</h2></div><div class="rich-text glass">{{ product.description|linebreaks }}</div></section>
+<section class="section muted-band"><div class="container"><div class="section-head"><span>Related</span><h2>Complete the setup</h2></div><div class="product-grid">{% for product in related %}{% include "products/_product_card.html" %}{% endfor %}</div></div></section>
+{% if recently_viewed_products %}
+<section class="section container"><div class="section-head"><span>Recently viewed</span><h2>Continue browsing</h2></div><div class="product-grid">{% for product in recently_viewed_products %}{% include "products/_product_card.html" %}{% endfor %}</div></section>
+{% endif %}
+{% endblock %}

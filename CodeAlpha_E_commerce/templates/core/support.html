@@ -1,0 +1,32 @@
+{% extends "base/base.html" %}
+{% block title %}Support | CA-Tech{% endblock %}
+{% block content %}
+<section class="page-hero compact-hero">
+  <div class="container">
+    <span>Customer Support</span>
+    <h1>How can we help?</h1>
+    <p>Find quick answers, check your order status, or get in touch with our premium support team.</p>
+  </div>
+</section>
+
+<section class="section container split-showcase">
+  <div class="glass rich-text">
+    <h2>Contact Us</h2>
+    <p>Our dedicated support team is available Monday through Friday, 9:00 AM to 6:00 PM EST.</p>
+    <div class="contact-info" style="margin-top: 2rem;">
+      <p><i class="fa-solid fa-envelope" style="color: var(--primary); margin-right: 10px;"></i> support@technestelectronics.com</p>
+      <p><i class="fa-solid fa-phone" style="color: var(--primary); margin-right: 10px;"></i> +1 (800) 123-4567</p>
+      <p><i class="fa-solid fa-location-dot" style="color: var(--primary); margin-right: 10px;"></i> 123 Tech Boulevard, Innovation District</p>
+    </div>
+    <div style="margin-top: 2rem;">
+      <a href="{% url 'core:contact' %}" class="primary-btn ripple">Send a Message</a>
+    </div>
+  </div>
+  <div class="stats-grid">
+    <div><strong>24/7</strong><span>Self-Service</span></div>
+    <div><strong>FAQ</strong><span>Knowledge Base</span></div>
+    <div><strong>Track</strong><span>Order Status</span></div>
+    <div><strong>Returns</strong><span>30-Day Policy</span></div>
+  </div>
+</section>
+{% endblock %}

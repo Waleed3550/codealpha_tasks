@@ -1,0 +1,49 @@
+{% load localization_tags %}
+<article class="product-card glass" style="position: relative;">
+  <div class="product-media-wrapper" style="position: relative; overflow: hidden;">
+    <a class="product-media" href="{{ product.get_absolute_url }}">
+      <img src="{{ product.primary_image }}" alt="{{ product.name }}" loading="lazy">
+      {% if product.on_sale %}
+      <span class="product-badge" style="position: absolute; top: 12px; left: 12px; background: #ef4444; color: white; padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 0.75rem; z-index: 2;">Sale</span>
+      {% endif %}
+    </a>
+    <div class="product-action-buttons" style="position: absolute; top: 12px; right: 12px; display: flex; flex-direction: column; gap: 8px; z-index: 5;">
+      <button class="icon-btn ripple action-icon" title="Add to Wishlist" style="background: rgba(255,255,255,0.9); border: none; width: 36px; height: 36px; border-radius: 50%; box-shadow: 0 4px 12px rgba(0,0,0,0.1); cursor: pointer; color: #374151; transition: all 0.2s;"><i class="fa-regular fa-heart"></i></button>
+      <button class="icon-btn ripple action-icon" title="Compare" style="background: rgba(255,255,255,0.9); border: none; width: 36px; height: 36px; border-radius: 50%; box-shadow: 0 4px 12px rgba(0,0,0,0.1); cursor: pointer; color: #374151; transition: all 0.2s;"><i class="fa-solid fa-code-compare"></i></button>
+      <button class="icon-btn ripple action-icon" title="Quick View" style="background: rgba(255,255,255,0.9); border: none; width: 36px; height: 36px; border-radius: 50%; box-shadow: 0 4px 12px rgba(0,0,0,0.1); cursor: pointer; color: #374151; transition: all 0.2s;"><i class="fa-regular fa-eye"></i></button>
+    </div>
+    <div class="add-to-cart-overlay">
+      <form action="{% url 'cart:add' product.id %}" method="post" class="ajax-cart-form" style="width: 100%; display: flex; justify-content: center; padding: 0 16px;">
+        {% csrf_token %}
+        <button class="primary-btn pill-btn ripple" type="submit" style="transform: translateY(10px); transition: 0.4s; width: 100%;">
+          <i class="fa-solid fa-cart-shopping"></i> Add to Cart
+        </button>
+      </form>
+    </div>
+  </div>
+  <div class="product-body">
+    <div class="product-meta" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+      <span class="product-category" style="color: var(--primary); font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em;">{{ product.category.name|default:"Electronics" }}</span>
+      <span class="stock-status" style="font-size: 0.75rem; font-weight: 600; color: #10b981;"><i class="fa-solid fa-circle-check"></i> In Stock</span>
+    </div>
+    <h3 style="margin: 0 0 6px; font-size: 1.05rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+      <a href="{{ product.get_absolute_url }}" style="color: inherit; text-decoration: none;">{{ product.name }}</a>
+    </h3>
+    <div class="product-rating" style="color: #f59e0b; font-size: 0.8rem; margin-bottom: 12px; display: flex; align-items: center; gap: 4px;">
+      <i class="fa-solid fa-star"></i>
+      <i class="fa-solid fa-star"></i>
+      <i class="fa-solid fa-star"></i>
+      <i class="fa-solid fa-star"></i>
+      <i class="fa-solid fa-star-half-stroke"></i>
+      <span style="color: var(--muted); margin-left: 2px;">{{ product.rating|default:"4.5" }}</span>
+    </div>
+    <div class="price-row" style="display: flex; align-items: center; gap: 8px;">
+      {% if product.on_sale %}
+        <strong style="color: #ef4444; font-size: 1.25rem;">{{ product.price |localize_price:request }}</strong>
+        <del style="color: var(--muted); font-size: 0.9rem;">{{ product.compare_at_price |localize_price:request }}</del>
+      {% else %}
+        <strong style="font-size: 1.25rem;">{{ product.price |localize_price:request }}</strong>
+      {% endif %}
+    </div>
+  </div>
+</article>

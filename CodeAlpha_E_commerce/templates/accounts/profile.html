@@ -1,0 +1,31 @@
+{% extends "base/base.html" %}
+{% load localization_tags %}
+{% block title %}Customer Dashboard | CA-Tech{% endblock %}
+{% block content %}
+<section class="page-hero compact-hero"><div class="container"><span>Customer Dashboard</span><h1>Hello, {{ user.first_name|default:user.username }}</h1><p>Manage your profile, orders, notifications, addresses, wishlist, and recent purchases.</p></div></section>
+<section class="section container customer-dashboard">
+  <aside class="glass profile-card">
+    {% if profile_picture %}
+      <img class="avatar" src="{{ profile_picture }}" alt="{{ user.get_full_name|default:user.username }}" style="object-fit: cover;">
+    {% else %}
+      <div class="avatar">{{ user.first_name|first|default:user.username|first }}</div>
+    {% endif %}
+    <h2>{{ user.get_full_name|default:user.username }}</h2>
+    <p>{{ user.email }}</p>
+    <a class="primary-btn compact" href="{% url 'accounts:edit_profile' %}">Edit Profile</a>
+    <form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}<button class="ghost-btn" type="submit">Logout</button></form>
+  </aside>
+  <div class="customer-main">
+    <div class="customer-cards">
+      <div class="glass customer-card"><i class="fa-solid fa-receipt"></i><strong>{{ orders|length }}</strong><span>Recent Orders</span></div>
+      <div class="glass customer-card"><i class="fa-solid fa-heart"></i><strong>0</strong><span>Wishlist</span></div>
+      <div class="glass customer-card"><i class="fa-solid fa-location-dot"></i><strong>1</strong><span>Saved Address</span></div>
+      <div class="glass customer-card"><i class="fa-solid fa-bell"></i><strong>{{ notifications|length }}</strong><span>Notifications</span></div>
+    </div>
+    <div class="glass table-card"><h2>Notifications</h2>{% for notification in notifications %}<div class="activity-row"><i class="fa-solid fa-bell"></i><div><strong>{{ notification.title }}</strong><p>{{ notification.message }}</p></div></div>{% empty %}<p>No notifications yet.</p>{% endfor %}</div>
+    <div class="glass table-card"><h2>Recent Purchases & Orders</h2>{% for order in orders %}<a class="order-line" href="{{ order.get_absolute_url }}"><strong>{{ order.order_number }}</strong><span>Payment {{ order.get_payment_status_display }}</span><span>{{ order.get_status_display }}</span><span>{{order.grand_total |localize_price:request}}</span></a>{% empty %}<p>No orders yet.</p>{% endfor %}</div>
+    <div class="glass table-card"><h2>Account Details</h2><div class="spec-list"><div><span>Login Method</span><strong>{{ auth_method_label }}</strong></div><div><span>Email</span><strong>{{ user.email }}</strong></div><div><span>Last Login</span><strong>{{ last_login|date:"M d, Y, h:i A"|default:"Never" }}</strong></div><div><span>Account Created</span><strong>{{ account_created|date:"M d, Y, h:i A" }}</strong></div></div></div>
+    <div class="glass table-card"><h2>Saved Addresses</h2><div class="spec-list"><div><span>Phone</span><strong>{{ user.profile.phone|default:"Not set" }}</strong></div><div><span>Address</span><strong>{{ user.profile.address_line_1|default:"Not set" }}</strong></div><div><span>City</span><strong>{{ user.profile.city|default:"Not set" }}</strong></div><div><span>Country</span><strong>{{ user.profile.country }}</strong></div></div></div>
+  </div>
+</section>
+{% endblock %}

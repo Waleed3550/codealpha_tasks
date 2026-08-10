@@ -1,0 +1,10 @@
+{% extends "dashboard/base.html" %}
+{% load localization_tags %}
+{% block title %}{% if product %}Edit{% else %}Add{% endif %} Product | CA-Tech Admin{% endblock %}
+{% block content %}
+<div class="admin-page-head"><div><span class="eyebrow">Product Management</span><h1>{% if product %}Edit product{% else %}Add product{% endif %}</h1></div><a class="ghost-btn" href="{% url 'dashboard:products' %}">Back</a></div>
+<form class="admin-card admin-form-grid" method="post" enctype="multipart/form-data">{% csrf_token %}{{ form.as_p }}<button class="primary-btn" type="submit">Save Product</button></form>
+{% if product %}
+<div class="admin-card"><div class="card-head"><h2>Product Preview</h2><a href="{{ product.get_absolute_url }}" target="_blank">Open storefront page</a></div><div class="product-cell large"><img src="{{ product.primary_image }}" alt="{{ product.name }}"><div><strong>{{ product.name }}</strong><p>{{ product.short_description }}</p><b>{{product.price |localize_price:request}}</b></div></div></div>
+{% endif %}
+{% endblock %}

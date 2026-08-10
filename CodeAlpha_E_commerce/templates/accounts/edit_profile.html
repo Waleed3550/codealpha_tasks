@@ -1,0 +1,5 @@
+{% extends "base/base.html" %}
+{% block title %}Edit Profile | CA-Tech{% endblock %}
+{% block content %}
+<section class="section container"><div class="glass checkout-form"><h1>Edit profile</h1><form method="post" class="form-grid">{% csrf_token %}{{ user_form.as_p }}{{ profile_form.as_p }}<button class="primary-btn ripple" type="submit">Save changes</button></form></div></section>
+{% endblock %}

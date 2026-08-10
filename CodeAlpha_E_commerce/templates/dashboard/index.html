@@ -1,0 +1,42 @@
+{% extends "dashboard/base.html" %}
+{% load localization_tags %}
+{% block title %}Overview | CA-Tech Admin{% endblock %}
+{% block content %}
+<div class="admin-page-head" data-aos="fade-up">
+  <div><span class="eyebrow">Dashboard Overview</span><h1>Commerce command center</h1><p>Revenue, orders, catalog health, customers, and operations in one place.</p></div>
+  <div class="quick-actions"><a class="primary-btn compact" href="{% url 'dashboard:product_add' %}"><i class="fa-solid fa-plus"></i> Add Product</a><a class="ghost-btn" href="{% url 'dashboard:orders' %}">Manage Orders</a></div>
+</div>
+<section class="admin-kpi-grid">
+  <div class="admin-kpi gradient-a"><i class="fa-solid fa-dollar-sign"></i><span>Revenue</span><strong data-counter="{{ revenue }}">${{ revenue|floatformat:0 }}</strong></div>
+  <div class="admin-kpi gradient-b"><i class="fa-solid fa-sun"></i><span>Today</span><strong data-counter="{{ today_revenue }}">${{ today_revenue|floatformat:0 }}</strong></div>
+  <div class="admin-kpi gradient-b"><i class="fa-solid fa-receipt"></i><span>Orders</span><strong data-counter="{{ orders_count }}">{{ orders_count }}</strong></div>
+  <div class="admin-kpi gradient-c"><i class="fa-solid fa-clock"></i><span>Pending</span><strong data-counter="{{ pending_orders }}">{{ pending_orders }}</strong></div>
+  <div class="admin-kpi gradient-c"><i class="fa-solid fa-box"></i><span>Products</span><strong data-counter="{{ products_count }}">{{ products_count }}</strong></div>
+  <div class="admin-kpi gradient-d"><i class="fa-solid fa-truck"></i><span>Delivered</span><strong data-counter="{{ delivered_orders }}">{{ delivered_orders }}</strong></div>
+  <div class="admin-kpi gradient-d"><i class="fa-solid fa-users"></i><span>Customers</span><strong data-counter="{{ users_count }}">{{ users_count }}</strong></div>
+  <div class="admin-kpi gradient-a"><i class="fa-solid fa-circle-exclamation"></i><span>Low Stock</span><strong data-counter="{{ low_stock_count }}">{{ low_stock_count }}</strong></div>
+  <div class="admin-kpi gradient-b"><i class="fa-solid fa-ban"></i><span>Out of Stock</span><strong data-counter="{{ out_of_stock_count }}">{{ out_of_stock_count }}</strong></div>
+</section>
+<section class="admin-grid two" id="analytics">
+  <div class="admin-card"><div class="card-head"><h2>Monthly Revenue</h2><span>Sales analytics</span></div><canvas id="revenueChart"></canvas></div>
+  <div class="admin-card"><div class="card-head"><h2>Orders</h2><span>Monthly volume</span></div><canvas id="ordersChart"></canvas></div>
+  <div class="admin-card"><div class="card-head"><h2>Category Distribution</h2><span>Catalog mix</span></div><canvas id="categoryChart"></canvas></div>
+  <div class="admin-card"><div class="card-head"><h2>Country Mix</h2><span>Visitor order locations</span></div><canvas id="countryChart"></canvas></div>
+  <div class="admin-card"><div class="card-head"><h2>System Status</h2><span>Live checks</span></div>{% for name, value in system_status.items %}<div class="status-row"><span>{{ name|title }}</span><strong><i class="fa-solid fa-circle-check"></i> {{ value }}</strong></div>{% endfor %}</div>
+</section>
+<section class="admin-grid three" id="reports">
+  <div class="admin-card"><div class="card-head"><h2>Recent Orders</h2><a href="{% url 'dashboard:orders' %}">View all</a></div>{% for order in recent_orders %}<a class="admin-list-row" href="{% url 'dashboard:order_detail' order.id %}"><strong>{{ order.order_number }}</strong><span>{{ order.full_name }}</span><b>{{order.grand_total |localize_price:request}}</b></a>{% endfor %}</div>
+  <div class="admin-card"><div class="card-head"><h2>Recent Customers</h2><span>New accounts</span></div>{% for customer in recent_customers %}<div class="admin-list-row"><strong>{{ customer.username }}</strong><span>{{ customer.email }}</span><b>{{ customer.date_joined|date:"M d" }}</b></div>{% endfor %}</div>
+  <div class="admin-card"><div class="card-head"><h2>Low Stock Products</h2><span>Action needed</span></div>{% for product in low_stock %}<a class="admin-list-row" href="{% url 'dashboard:product_edit' product.id %}"><strong>{{ product.name }}</strong><span>{{ product.brand.name }}</span><b>{{ product.stock }} left</b></a>{% empty %}<p>Inventory looks healthy.</p>{% endfor %}</div>
+  <div class="admin-card"><div class="card-head"><h2>Top Selling Products</h2><span>By quantity</span></div>{% for product in top_products %}<div class="admin-list-row"><strong>{{ product.product_name }}</strong><span>{{ product.total_sold }} sold</span><b>{{product.revenue |localize_price:request}}</b></div>{% empty %}<p>No sales data yet.</p>{% endfor %}</div>
+  <div class="admin-card" id="notifications"><div class="card-head"><h2>Recent Activities</h2><span>Status changes</span></div>{% for activity in activities %}<div class="activity-row"><i class="fa-solid fa-bell"></i><div><strong>{{ activity.title }}</strong><p>{{ activity.message }}</p></div></div>{% empty %}<p>No activity yet.</p>{% endfor %}</div>
+  <div class="admin-card"><div class="card-head"><h2>Latest Reviews</h2><span>Customer feedback</span></div>{% for review in latest_reviews %}<div class="admin-list-row"><strong>{{ review.product.name }}</strong><span>{{ review.customer_name }} / {{ review.rating }} stars</span><b>{{ review.created_at|date:"M d" }}</b></div>{% empty %}<p>No approved reviews yet.</p>{% endfor %}</div>
+</section>
+{{ monthly_labels|json_script:"monthly-labels" }}
+{{ monthly_revenue|json_script:"monthly-revenue" }}
+{{ monthly_orders|json_script:"monthly-orders" }}
+{{ category_labels|json_script:"category-labels" }}
+{{ category_counts|json_script:"category-counts" }}
+{{ country_labels|json_script:"country-labels" }}
+{{ country_counts|json_script:"country-counts" }}
+{% endblock %}

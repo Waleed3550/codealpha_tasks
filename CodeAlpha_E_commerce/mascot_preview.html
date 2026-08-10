@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mascot Animation Preview</title>
+<style>
+  body {
+    background: #0b0f17; /* Dark background to match the glow */
+    color: white;
+    font-family: sans-serif;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    margin: 0;
+  }
+  .auth-layout-wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3rem;
+    width: 100%;
+    max-width: 900px;
+  }
+  .auth-mascot-container {
+    width: 250px;
+    height: 250px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .auth-mascot-container svg {
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+  }
+  .auth-panel {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 2rem;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 400px;
+  }
+  .stack-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+  }
+  .stack-form input {
+    padding: 12px;
+    border-radius: 8px;
+    border: 1px solid #333;
+    background: rgba(0,0,0,0.2);
+    color: white;
+    font-size: 16px;
+    outline: none;
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .stack-form input:focus {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(45,212,191,0.2);
+    border-color: #2dd4bf;
+  }
+  .stack-form button {
+    padding: 12px;
+    border-radius: 8px;
+    border: none;
+    background: linear-gradient(135deg, #0f766e, #2563eb);
+    color: white;
+    font-weight: bold;
+    font-size: 16px;
+    cursor: pointer;
+    margin-top: 1rem;
+  }
+  .controls {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    display: flex;
+    gap: 10px;
+  }
+  .controls button {
+    padding: 8px 12px;
+    background: #333;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+</style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+</head>
+<body>
+
+<div class="controls">
+  <button onclick="mascotFail()">Simulate Fail</button>
+  <button onclick="mascotSuccess()">Simulate Success</button>
+  <button onclick="mascotIdle()">Return to Idle</button>
+</div>
+
+<div class="auth-layout-wrapper">
+  <!-- Animated Mascot -->
+  <div class="auth-mascot-container">
+    <svg id="tech-mascot" viewBox="0 0 200 200">
+      <defs>
+        <radialGradient id="screen-glow" cx="50%" cy="50%" r="50%">
+          <stop offset="0%" stop-color="#141e30"/>
+          <stop offset="100%" stop-color="#243b55"/>
+        </radialGradient>
+        <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="3" result="blur" />
+          <feComposite in="SourceGraphic" in2="blur" operator="over" />
+        </filter>
+      </defs>
+      <g id="mascot-body">
+        <ellipse cx="100" cy="180" rx="40" ry="8" fill="rgba(255,255,255,0.1)" id="mascot-shadow" />
+        <g id="mascot-torso">
+          <line x1="100" y1="45" x2="100" y2="20" stroke="#9ca3af" stroke-width="4" stroke-linecap="round" />
+          <circle cx="100" cy="20" r="7" fill="#f59e0b" id="mascot-bulb" />
+          <circle cx="100" cy="20" r="7" fill="#f59e0b" filter="url(#glow)" opacity="0.6" id="mascot-bulb-glow" />
+          <rect x="40" y="45" width="120" height="90" rx="30" fill="#ffffff" stroke="#e5e7eb" stroke-width="2" />
+          <rect x="45" y="50" width="110" height="80" rx="25" fill="#f3f4f6" />
+          <rect x="52" y="58" width="96" height="64" rx="16" fill="url(#screen-glow)" />
+          <g id="mascot-eyes-wrap">
+            <g id="eye-l"><ellipse cx="78" cy="86" rx="8" ry="12" fill="#2dd4bf" filter="url(#glow)" class="eye-shape" /><circle cx="80" cy="82" r="3" fill="#ffffff" opacity="0.8" /></g>
+            <g id="eye-r"><ellipse cx="122" cy="86" rx="8" ry="12" fill="#2dd4bf" filter="url(#glow)" class="eye-shape" /><circle cx="124" cy="82" r="3" fill="#ffffff" opacity="0.8" /></g>
+            <path id="mascot-mouth" d="M 88 102 Q 100 102 112 102" stroke="#2dd4bf" stroke-width="3" stroke-linecap="round" fill="transparent" filter="url(#glow)" />
+          </g>
+          <g id="mascot-tears" opacity="0">
+            <path d="M 78 102 Q 78 112 78 115" stroke="#60a5fa" stroke-width="3" stroke-linecap="round" fill="transparent" />
+            <path d="M 122 102 Q 122 112 122 115" stroke="#60a5fa" stroke-width="3" stroke-linecap="round" fill="transparent" />
+          </g>
+          <g id="hand-l"><circle cx="30" cy="110" r="14" fill="#ffffff" stroke="#e5e7eb" stroke-width="2" /><circle cx="30" cy="110" r="8" fill="#f3f4f6" /></g>
+          <g id="hand-r"><circle cx="170" cy="110" r="14" fill="#ffffff" stroke="#e5e7eb" stroke-width="2" /><circle cx="170" cy="110" r="8" fill="#f3f4f6" /></g>
+        </g>
+      </g>
+    </svg>
+  </div>
+  
+  <div class="auth-panel">
+    <h2 style="margin-top:0">Sign Up Preview</h2>
+    <form class="stack-form" onsubmit="event.preventDefault(); mascotSuccess(); setTimeout(mascotIdle, 3000);">
+      <input type="text" placeholder="Username">
+      <input type="email" placeholder="Email">
+      <input type="password" placeholder="Password (covers eyes)">
+      <input type="password" placeholder="Confirm Password (checks match)">
+      <button type="submit">Test Submit</button>
+    </form>
+  </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const head = '#mascot-torso', eyesWrap = '#mascot-eyes-wrap', eyeL = '#eye-l .eye-shape', eyeR = '#eye-r .eye-shape';
+  const mouth = '#mascot-mouth', tears = '#mascot-tears', handL = '#hand-l', handR = '#hand-r', shadow = '#mascot-shadow';
+  const antenna = '#mascot-bulb', antennaGlow = '#mascot-bulb-glow';
+
+  let idleTl = gsap.timeline({ repeat: -1, yoyo: true });
+  idleTl.to(head, { y: -8, duration: 2, ease: "sine.inOut" }, 0)
+        .to(shadow, { scale: 0.9, opacity: 0.5, duration: 2, ease: "sine.inOut", transformOrigin: "center" }, 0);
+
+  gsap.to([antenna, antennaGlow], { fill: '#fbbf24', opacity: 1, duration: 1, repeat: -1, yoyo: true, ease: "sine.inOut" });
+
+  function blink() {
+    gsap.to([eyeL, eyeR], { scaleY: 0.1, duration: 0.1, transformOrigin: "center", yoyo: true, repeat: 1 });
+    setTimeout(blink, Math.random() * 4000 + 2000);
+  }
+  blink();
+
+  function randomSmile() {
+    gsap.to(mouth, { attr: { d: "M 85 102 Q 100 112 115 102" }, duration: 0.4 });
+    setTimeout(() => { gsap.to(mouth, { attr: { d: "M 88 102 Q 100 102 112 102" }, duration: 0.4 }); }, 2000);
+    setTimeout(randomSmile, Math.random() * 6000 + 4000);
+  }
+  randomSmile();
+
+  let isConfused = false;
+  window.mascotConfused = function() {
+    gsap.to(head, { rotation: 12, duration: 0.4, ease: "back.out(1.5)" });
+    gsap.to(mouth, { attr: { d: "M 90 106 Q 100 102 110 106" }, duration: 0.3 });
+    gsap.to(handR, { x: 0, y: 0, duration: 0.4, ease: "power2.out" }); // lower one hand
+    gsap.to(eyeR, { scaleY: 0.5, duration: 0.3 });
+  };
+  window.mascotUnconfused = function() {
+    gsap.to(head, { rotation: 0, duration: 0.4, ease: "power2.out" });
+    gsap.to(mouth, { attr: { d: "M 88 102 Q 100 102 112 102" }, duration: 0.3 });
+    gsap.to(eyeR, { scaleY: 1, duration: 0.3 });
+    if (document.activeElement && document.activeElement.type === 'password') {
+      gsap.to(handR, { x: -40, y: -25, duration: 0.4, ease: "back.out(1.7)" }); // put hand back
+    }
+  };
+
+  const inputs = document.querySelectorAll('form.stack-form input');
+  const passInputs = document.querySelectorAll('form.stack-form input[type="password"]');
+
+  passInputs.forEach(input => {
+    input.addEventListener('focus', () => {
+      gsap.to(handL, { x: 40, y: -25, duration: 0.4, ease: "back.out(1.7)" });
+      if (!isConfused) gsap.to(handR, { x: -40, y: -25, duration: 0.4, ease: "back.out(1.7)" });
+      gsap.to(eyesWrap, { y: -2, duration: 0.2 });
+    });
+    input.addEventListener('blur', () => {
+      gsap.to([handL, handR], { x: 0, y: 0, duration: 0.4, ease: "power2.out" });
+      gsap.to(eyesWrap, { x: 0, y: 0, duration: 0.2 });
+    });
+  });
+
+  if (passInputs.length >= 2) {
+    const p1 = passInputs[0];
+    const p2 = passInputs[1];
+    const checkMatch = () => {
+      if (p1.value && p2.value && p1.value !== p2.value) {
+        if (!isConfused) { isConfused = true; mascotConfused(); }
+      } else {
+        if (isConfused) { isConfused = false; mascotUnconfused(); }
+      }
+    };
+    p1.addEventListener('input', checkMatch);
+    p2.addEventListener('input', checkMatch);
+  }
+
+  inputs.forEach(input => {
+    if (input.type === 'password') return;
+    input.addEventListener('focus', () => gsap.to(eyesWrap, { x: 8, y: 2, duration: 0.3 }));
+    input.addEventListener('blur', () => gsap.to(eyesWrap, { x: 0, y: 0, duration: 0.3 }));
+    input.addEventListener('input', (e) => {
+      const mx = Math.min((e.target.value.length / 20) * 12, 12);
+      gsap.to(eyesWrap, { x: mx, duration: 0.1 });
+    });
+  });
+
+  window.mascotFail = function() {
+    gsap.to(mouth, { attr: { d: "M 85 108 Q 100 98 115 108" }, duration: 0.4 });
+    gsap.to(eyesWrap, { y: 6, duration: 0.4 });
+    gsap.to([eyeL, eyeR], { fill: '#60a5fa', scaleY: 0.8, duration: 0.4, transformOrigin: "center" });
+    gsap.to(head, { x: -6, duration: 0.08, yoyo: true, repeat: 5, ease: "sine.inOut" });
+    gsap.to(tears, { opacity: 1, y: 5, duration: 0.5, ease: "power1.in", delay: 0.2 });
+  };
+
+  window.mascotIdle = function() {
+    gsap.to(mouth, { attr: { d: "M 88 102 Q 100 102 112 102" }, duration: 0.4 });
+    gsap.to(eyesWrap, { x: 0, y: 0, duration: 0.4 });
+    gsap.to([eyeL, eyeR], { fill: '#2dd4bf', scaleY: 1, duration: 0.4, transformOrigin: "center" });
+    gsap.to(tears, { opacity: 0, y: 0, duration: 0.3 });
+    gsap.to(head, { x: 0, rotation: 0, duration: 0.5 });
+  };
+
+  window.mascotSuccess = function() {
+    gsap.to(mouth, { attr: { d: "M 82 98 Q 100 115 118 98" }, duration: 0.3 });
+    gsap.to([eyeL, eyeR], { scaleY: 0.2, duration: 0.2, transformOrigin: "center" });
+    idleTl.pause();
+    gsap.to(head, { y: -40, duration: 0.4, ease: "power2.out", yoyo: true, repeat: 3 });
+    gsap.to(shadow, { scale: 0.6, opacity: 0.2, duration: 0.4, ease: "power2.out", yoyo: true, repeat: 3 });
+    gsap.to(handL, { y: -30, rotation: -45, transformOrigin: "center", duration: 0.3, yoyo: true, repeat: -1 });
+    gsap.to(handR, { y: -30, rotation: 45, transformOrigin: "center", duration: 0.3, yoyo: true, repeat: -1 });
+    
+    // Automatically return to idle in preview
+    setTimeout(() => {
+      idleTl.resume();
+      gsap.to(head, { y: -8, duration: 0.5 });
+      gsap.to(shadow, { scale: 0.9, opacity: 0.5, duration: 0.5 });
+      gsap.to(handL, { y: 0, rotation: 0, duration: 0.4 });
+      gsap.to(handR, { y: 0, rotation: 0, duration: 0.4 });
+      mascotIdle();
+    }, 2500);
+  };
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,63 @@
+{% extends "dashboard/base.html" %}
+{% block title %}AI Settings | CA-Tech Admin{% endblock %}
+{% block content %}
+<div class="admin-page-head">
+  <div>
+    <h1>AI Settings</h1>
+    <p>Control the shopping assistant, provider, prompts, and voice features.</p>
+  </div>
+</div>
+
+<div class="admin-grid two">
+  <section class="admin-card">
+    <div class="card-head">
+      <div>
+        <h2>Assistant Configuration</h2>
+        <span>Provider and behavior controls</span>
+      </div>
+    </div>
+    <form method="post" class="admin-form-grid">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <button class="primary-btn" type="submit">Save AI Settings</button>
+    </form>
+  </section>
+
+  <section class="admin-card">
+    <div class="card-head">
+      <div>
+        <h2>Recent Chat History</h2>
+        <span>Latest conversations and voice logs</span>
+      </div>
+    </div>
+    <div class="admin-list">
+      {% for convo in conversations %}
+        <div class="admin-list-row">
+          <div>
+            <strong>{{ convo.title|default:"Shopping Assistant" }}</strong>
+            <span>{{ convo.language }} · {{ convo.last_message_at }}</span>
+          </div>
+          <span>{{ convo.message_count }} messages</span>
+          <a href="{% url 'assistant:state_api' %}?conversation_id={{ convo.id }}">View</a>
+        </div>
+      {% empty %}
+        <p>No chat history yet.</p>
+      {% endfor %}
+    </div>
+    <div class="admin-list" style="margin-top:1.2rem">
+      {% for voice_log in voice_logs %}
+        <div class="admin-list-row">
+          <div>
+            <strong>{{ voice_log.language|upper }} voice log</strong>
+            <span>{{ voice_log.created_at }}</span>
+          </div>
+          <span>{{ voice_log.provider }}</span>
+          <span>{% if voice_log.success %}Success{% else %}Failed{% endif %}</span>
+        </div>
+      {% empty %}
+        <p>No voice logs yet.</p>
+      {% endfor %}
+    </div>
+  </section>
+</div>
+{% endblock %}

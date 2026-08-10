@@ -1,0 +1,12 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Customers | CA-Tech Admin{% endblock %}
+{% block content %}
+<div class="admin-page-head"><div><span class="eyebrow">Customers</span><h1>Customer Management</h1><p>View registered customer accounts, contact details, and order counts.</p></div></div>
+<form class="admin-filter-bar glass" method="get"><input name="q" value="{{ query }}" placeholder="Search customers by name, username, or email"><button class="primary-btn compact" type="submit">Search</button></form>
+<div class="admin-card admin-table">
+  <div class="admin-table-head customer"><span>Customer</span><span>Email</span><span>Phone</span><span>Orders</span><span>Joined</span></div>
+  {% for customer in page_obj %}
+    <div class="admin-table-row customer"><strong>{{ customer.get_full_name|default:customer.username }}</strong><span>{{ customer.email|default:"No email" }}</span><span>{{ customer.profile.phone|default:"Not set" }}</span><span>{{ customer.order_count }}</span><span>{{ customer.date_joined|date:"M d, Y" }}</span></div>
+  {% empty %}<p>No customers found.</p>{% endfor %}
+</div>
+{% endblock %}

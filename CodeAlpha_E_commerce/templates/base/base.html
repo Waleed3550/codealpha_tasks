@@ -1,0 +1,89 @@
+{% load static %}
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="{% block meta_description %}Premium electronics, laptops, phones, gaming gear, and accessories from CA-Tech Electronics.{% endblock %}">
+  <title>{% block title %}CA-Tech Electronics{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  <link rel="stylesheet" href="{% static 'css/assistant.css' %}">
+  {% if google_oauth_client_id %}<script src="https://accounts.google.com/gsi/client" async defer></script>{% endif %}
+</head>
+<body data-auth-next-url="{{ request.get_full_path|escape }}" data-google-client-id="{{ google_oauth_client_id|escape }}" data-google-login-url="{{ google_oauth_login_url }}" data-google-register-url="{{ google_oauth_register_url }}">
+  <div class="custom-cursor" id="customCursor"></div>
+  <div class="loading-screen" aria-hidden="true"><span></span></div>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="site-header" id="siteHeader">
+    <nav class="navbar container" aria-label="Primary navigation">
+      <a class="brand" href="{% url 'core:home' %}" aria-label="CA-Tech home"><i class="fa-solid fa-microchip"></i><span>CA-Tech</span></a>
+      <form class="search-bar" action="{% url 'products:list' %}" method="get">
+        <i class="fa-solid fa-magnifying-glass"></i>
+        <input type="search" name="q" value="{{ request.GET.q }}" placeholder="Search laptops, phones, gaming gear" aria-label="Search products">
+      </form>
+      <button class="nav-toggle icon-btn" data-nav-toggle aria-label="Open menu"><i class="fa-solid fa-bars"></i></button>
+      <div class="nav-links" data-nav-menu>
+        <div class="nav-dropdown">
+          <a href="{% url 'products:list' %}" class="dropdown-trigger">Shop <i class="fa-solid fa-chevron-down" style="font-size: 0.8em; margin-left: 4px;"></i></a>
+          <div class="dropdown-menu glass">
+            <a href="{% url 'products:list' %}">All Products</a>
+            {% for cat in nav_categories %}
+              <a href="{{ cat.get_absolute_url }}">{{ cat.name }}</a>
+            {% endfor %}
+          </div>
+        </div>
+        <a href="{% url 'core:about' %}">About</a>
+        <a href="{% url 'core:support' %}">Support</a>
+      </div>
+      <div class="nav-actions">
+        <button class="icon-btn" data-theme-toggle aria-label="Toggle dark mode"><i class="fa-solid fa-moon"></i></button>
+        {% if user.is_authenticated %}<a class="icon-btn" href="{% url 'accounts:profile' %}" aria-label="Notifications"><i class="fa-solid fa-bell"></i><span class="cart-count">{{ user.notifications.count }}</span></a>{% endif %}
+        <a class="icon-btn cart-pulse" href="{% url 'cart:detail' %}" aria-label="Cart"><i class="fa-solid fa-bag-shopping"></i><span class="cart-count">{{ cart_item_count }}</span></a>
+        {% if user.is_authenticated %}
+          {% if user.is_staff %}
+            <a class="pill-btn" href="{% url 'dashboard:home' %}"><i class="fa-solid fa-gauge"></i> Admin</a>
+          {% else %}
+            <a class="pill-btn" href="{% url 'customer_dashboard' %}"><i class="fa-solid fa-user"></i> Account</a>
+          {% endif %}
+        {% else %}
+          <button class="pill-btn" type="button" data-auth-modal-open>Login</button>
+        {% endif %}
+      </div>
+    </nav>
+  </header>
+  {% if messages %}
+    <div class="toast-stack" aria-live="polite">
+      {% for message in messages %}<div class="toast {{ message.tags }}">{{ message }}</div>{% endfor %}
+    </div>
+  {% endif %}
+  {% block floating_widgets %}
+  {% include "components/auth_modal.html" %}
+  {% include "components/ai_assistant.html" %}
+  {% include "components/whatsapp_fab.html" %}
+  {% endblock %}
+  <main id="main" class="page-transition">{% block content %}{% endblock %}</main>
+  <footer class="footer">
+    <div class="container footer-grid">
+      <div>
+        <a class="brand" href="{% url 'core:home' %}"><i class="fa-solid fa-microchip"></i><span>CA-Tech</span></a>
+        <p>Premium electronics commerce with curated devices, transparent fulfillment, and real support.</p>
+      </div>
+      <div><h3>Shop</h3>{% for category in nav_categories %}<a href="{{ category.get_absolute_url }}">{{ category.name }}</a>{% endfor %}</div>
+      <div><h3>Brands</h3>{% for brand in nav_brands %}<a href="{% url 'products:list' %}?brand={{ brand.slug }}">{{ brand.name }}</a>{% endfor %}</div>
+      <div><h3>Service</h3><a href="{% url 'orders:history' %}">Orders</a><a href="{% url 'customer_dashboard' %}">Profile</a><a href="{% url 'core:contact' %}">Contact</a></div>
+    </div>
+    <div class="container footer-bottom"><span>&copy; {% now "Y" %} CA-Tech Electronics.</span><span>Secure checkout. Cash on delivery available.</span></div>
+  </footer>
+  <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="{% static 'js/app.js' %}" defer></script>
+  <script src="{% static 'js/assistant.js' %}" defer></script>
+</body>
+</html>

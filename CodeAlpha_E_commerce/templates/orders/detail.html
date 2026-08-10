@@ -1,0 +1,37 @@
+{% extends "base/base.html" %}
+{% load localization_tags %}
+{% block title %}{{ order.order_number }} | CA-Tech{% endblock %}
+{% block content %}
+<section class="page-hero compact-hero"><div class="container"><span>Track Order</span><h1>{{ order.order_number }}</h1><p>Payment {{ order.get_payment_status_display }} / Order {{ order.get_status_display }}</p></div></section>
+<section class="section container order-detail-page">
+  <div class="glass table-card">
+    <div class="section-head"><span>Order Timeline</span><h2>Tracking</h2></div>
+    <div class="timeline">
+      {% for value,label in timeline %}
+        <div class="timeline-step {% if forloop.counter0 <= current_index %}complete{% endif %} {% if order.status == value %}current{% endif %}"><span><i class="fa-solid fa-check"></i></span><strong>{{ label }}</strong></div>
+      {% endfor %}
+    </div>
+    {% if order.estimated_delivery_date %}
+      <div class="alert success">Estimated delivery: {{ order.estimated_delivery_date|date:"F j, Y" }}</div>
+    {% endif %}
+    {% if order.payment_status == "rejected" %}<div class="alert danger">Payment Rejected. Order Cancelled.</div>{% elif order.payment_status == "approved" %}<div class="alert success">Payment Approved. Order Confirmed.</div>{% else %}<div class="alert">Waiting for admin approval.</div>{% endif %}
+    {% if order.events.all %}
+      <div class="section-head" style="margin-top: 2rem;"><span>Tracking History</span><h2>Activity</h2></div>
+      <div class="spec-list">
+        {% for event in order.events.all %}
+          <div><span>{{ event.created_at|date:"M d, Y H:i" }}</span><strong>{{ event.title }}</strong><em style="display:block;color:var(--muted);font-style:normal;">{{ event.description }}</em></div>
+        {% endfor %}
+      </div>
+    {% endif %}
+  </div>
+  <div class="glass table-card">
+    <div class="section-head"><span>Invoice</span><h2>Items</h2></div>
+    {% for item in order.items.all %}<div class="order-line"><strong>{{ item.product_name }}</strong><span>{{ item.quantity }}</span><span>{{item.line_total |localize_price:request}}</span></div>{% endfor %}
+    <div class="order-line total"><strong>Total</strong><span></span><span>{{order.grand_total |localize_price:request}}</span></div>
+    <a class="primary-btn compact" href="{% url 'orders:invoice' order.order_number %}"><i class="fa-solid fa-download"></i> Download Invoice</a>
+  </div>
+  <div class="glass table-card">
+    <h2>Shipping Details</h2><div class="spec-list"><div><span>Name</span><strong>{{ order.full_name }}</strong></div><div><span>Phone</span><strong>{{ order.phone }}</strong></div><div><span>Address</span><strong>{{ order.shipping_address }}</strong></div><div><span>City</span><strong>{{ order.city }}, {{ order.state }} {{ order.postal_code }}</strong></div><div><span>Gateway</span><strong>{% if order.payment_gateway %}{{ order.payment_gateway|title }}{% else %}-{% endif %}</strong></div><div><span>Transaction ID</span><strong>{% if order.transaction_id %}{{ order.transaction_id }}{% else %}-{% endif %}</strong></div></div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base/base.html" %}
+{% block title %}Shop Electronics | CA-Tech{% endblock %}
+{% block content %}
+<section class="page-hero compact-hero"><div class="container"><span>Catalog</span><h1>Shop premium electronics</h1><p>Search, filter, sort, and compare real catalog items.</p></div></section>
+<section class="section container catalog-layout">
+  <aside class="filters glass" data-aos="fade-right">
+    <form method="get">
+      <label>Search<input type="search" name="q" value="{{ query }}" placeholder="MacBook, Galaxy, ROG"></label>
+      <label>Category<select name="category"><option value="">All categories</option>{% for category in categories %}<option value="{{ category.slug }}" {% if active_category == category.slug %}selected{% endif %}>{{ category.name }}</option>{% endfor %}</select></label>
+      <label>Brand<select name="brand"><option value="">All brands</option>{% for brand in brands %}<option value="{{ brand.slug }}" {% if active_brand == brand.slug %}selected{% endif %}>{{ brand.name }}</option>{% endfor %}</select></label>
+      <label>Sort<select name="sort"><option value="featured" {% if sort == "featured" %}selected{% endif %}>Featured</option><option value="newest" {% if sort == "newest" %}selected{% endif %}>Newest</option><option value="rating" {% if sort == "rating" %}selected{% endif %}>Top rated</option><option value="price_asc" {% if sort == "price_asc" %}selected{% endif %}>Price low to high</option><option value="price_desc" {% if sort == "price_desc" %}selected{% endif %}>Price high to low</option></select></label>
+      <button class="primary-btn ripple" type="submit">Apply filters</button>
+    </form>
+  </aside>
+  <div>
+    <div class="catalog-head"><strong>{{ page_obj.paginator.count }} products</strong><div class="skeleton-line" aria-hidden="true"></div></div>
+    <div class="product-grid catalog-grid">{% for product in page_obj %}{% include "products/_product_card.html" %}{% empty %}<p>No products matched your filters.</p>{% endfor %}</div>
+    {% if page_obj.paginator.num_pages > 1 %}
+      <nav class="pagination" aria-label="Pagination">
+        {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}&q={{ query }}&category={{ active_category }}&brand={{ active_brand }}&sort={{ sort }}">Previous</a>{% endif %}
+        <span>Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span>
+        {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}&q={{ query }}&category={{ active_category }}&brand={{ active_brand }}&sort={{ sort }}">Next</a>{% endif %}
+      </nav>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

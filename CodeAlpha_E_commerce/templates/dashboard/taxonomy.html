@@ -1,0 +1,11 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Categories & Brands | CA-Tech Admin{% endblock %}
+{% block content %}
+<div class="admin-page-head"><div><span class="eyebrow">Catalog</span><h1>Categories & Brands</h1></div></div>
+<section class="admin-grid two">
+  <form class="admin-card stack-form" method="post">{% csrf_token %}<h2>Add Category</h2>{{ category_form.as_p }}<button class="primary-btn" name="save_category" type="submit">Save Category</button></form>
+  <form class="admin-card stack-form" method="post">{% csrf_token %}<h2>Add Brand</h2>{{ brand_form.as_p }}<button class="primary-btn" name="save_brand" type="submit">Save Brand</button></form>
+  <div class="admin-card"><h2>Categories</h2>{% for category in categories %}<div class="admin-list-row"><strong>{{ category.name }}</strong><span>{{ category.products.count }} products</span><b>{{ category.is_active|yesno:"Active,Hidden" }}</b></div>{% endfor %}</div>
+  <div class="admin-card"><h2>Brands</h2>{% for brand in brands %}<div class="admin-list-row"><strong>{{ brand.name }}</strong><span>{{ brand.products.count }} products</span><b>{{ brand.is_featured|yesno:"Featured,Standard" }}</b></div>{% endfor %}</div>
+</section>
+{% endblock %}

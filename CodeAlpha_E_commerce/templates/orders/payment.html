@@ -1,0 +1,156 @@
+{% extends "base/base.html" %}
+{% load localization_tags %}
+{% block title %}Complete Payment | CA-Tech{% endblock %}
+{% block content %}
+<section class="page-hero compact-hero">
+  <div class="container">
+    <span>Secure Payment</span>
+    <h1>Complete your transaction</h1>
+  </div>
+</section>
+<section class="section container" style="max-width: 800px; margin: 0 auto;">
+  <div class="glass" style="padding: 2.5rem; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.08);">
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem; border-bottom: 1px solid var(--line); padding-bottom: 1rem;">
+      <div>
+        <h2 style="margin: 0; font-size: 1.4rem;">Order Total</h2>
+        <span style="color: var(--muted); font-size: 0.9rem;">Order {{ order.order_number }}</span>
+      </div>
+      <strong style="font-size: 2rem; color: var(--primary);">{{ order.grand_total |localize_price:request }}</strong>
+    </div>
+    
+    <form method="post" id="payment-form" style="display: grid; gap: 2rem;">
+      {% csrf_token %}
+      
+      <div>
+        <h3 style="margin-bottom: 1rem; font-size: 1.1rem; color: var(--text);">Available Payment Methods</h3>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem;">
+          
+          {% if order.country == "Pakistan" or order.country == "PK" %}
+            <label class="payment-method-card" style="border: 2px solid var(--primary); border-radius: 12px; padding: 1rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; text-align: center; background: rgba(15,118,110,0.05);">
+              <input type="radio" name="gateway" value="jazzcash" checked style="display: none;">
+              <div style="font-weight: 800; font-size: 1.2rem; color: #ee2a24;">JazzCash</div>
+            </label>
+            <label class="payment-method-card" style="border: 1px solid var(--line); border-radius: 12px; padding: 1rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; text-align: center;">
+              <input type="radio" name="gateway" value="easypaisa" style="display: none;">
+              <div style="font-weight: 800; font-size: 1.2rem; color: #00A651;">EasyPaisa</div>
+            </label>
+            <label class="payment-method-card" style="border: 1px solid var(--line); border-radius: 12px; padding: 1rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; text-align: center;">
+              <input type="radio" name="gateway" value="banktransfer" style="display: none;">
+              <i class="fa-solid fa-building-columns" style="font-size: 1.8rem; color: var(--muted);"></i>
+              <span style="font-weight: 600; font-size: 0.85rem;">Bank Transfer</span>
+            </label>
+            <label class="payment-method-card" style="border: 1px solid var(--line); border-radius: 12px; padding: 1rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; text-align: center;">
+              <input type="radio" name="gateway" value="visa" style="display: none;">
+              <i class="fa-brands fa-cc-visa" style="font-size: 2rem; color: #1434CB;"></i>
+              <span style="font-weight: 600; font-size: 0.85rem;">Visa</span>
+            </label>
+            <label class="payment-method-card" style="border: 1px solid var(--line); border-radius: 12px; padding: 1rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; text-align: center;">
+              <input type="radio" name="gateway" value="mastercard" style="display: none;">
+              <i class="fa-brands fa-cc-mastercard" style="font-size: 2rem; color: #EB001B;"></i>
+              <span style="font-weight: 600; font-size: 0.85rem;">Mastercard</span>
+            </label>
+          
+          {% elif order.country == "India" or order.country == "IN" %}
+            <label class="payment-method-card" style="border: 2px solid var(--primary); border-radius: 12px; padding: 1rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; text-align: center; background: rgba(15,118,110,0.05);">
+              <input type="radio" name="gateway" value="upi" checked style="display: none;">
+              <div style="font-weight: 800; font-size: 1.2rem; color: #00704a;">UPI</div>
+            </label>
+            <label class="payment-method-card" style="border: 1px solid var(--line); border-radius: 12px; padding: 1rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; text-align: center;">
+              <input type="radio" name="gateway" value="phonepe" style="display: none;">
+              <div style="font-weight: 800; font-size: 1.2rem; color: #5f259f;">PhonePe</div>
+            </label>
+            <label class="payment-method-card" style="border: 1px solid var(--line); border-radius: 12px; padding: 1rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; text-align: center;">
+              <input type="radio" name="gateway" value="paytm" style="display: none;">
+              <div style="font-weight: 800; font-size: 1.2rem; color: #002e6e;">Paytm</div>
+            </label>
+            <label class="payment-method-card" style="border: 1px solid var(--line); border-radius: 12px; padding: 1rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; text-align: center;">
+              <input type="radio" name="gateway" value="razorpay" style="display: none;">
+              <div style="font-weight: 800; font-size: 1.2rem; color: #3395FF;">Razorpay</div>
+            </label>
+            <label class="payment-method-card" style="border: 1px solid var(--line); border-radius: 12px; padding: 1rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; text-align: center;">
+              <input type="radio" name="gateway" value="visa" style="display: none;">
+              <i class="fa-brands fa-cc-visa" style="font-size: 2rem; color: #1434CB;"></i>
+              <span style="font-weight: 600; font-size: 0.85rem;">Visa</span>
+            </label>
+            <label class="payment-method-card" style="border: 1px solid var(--line); border-radius: 12px; padding: 1rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; text-align: center;">
+              <input type="radio" name="gateway" value="mastercard" style="display: none;">
+              <i class="fa-brands fa-cc-mastercard" style="font-size: 2rem; color: #EB001B;"></i>
+              <span style="font-weight: 600; font-size: 0.85rem;">Mastercard</span>
+            </label>
+          
+          {% else %}
+            <!-- United States / International Default -->
+            <label class="payment-method-card" style="border: 2px solid var(--primary); border-radius: 12px; padding: 1rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; text-align: center; background: rgba(15,118,110,0.05);">
+              <input type="radio" name="gateway" value="stripe" checked style="display: none;">
+              <i class="fa-brands fa-stripe" style="font-size: 2.2rem; color: #635bff;"></i>
+            </label>
+            <label class="payment-method-card" style="border: 1px solid var(--line); border-radius: 12px; padding: 1rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; text-align: center;">
+              <input type="radio" name="gateway" value="googlepay" style="display: none;">
+              <i class="fa-brands fa-google-pay" style="font-size: 2.2rem; color: #4285F4;"></i>
+            </label>
+            <label class="payment-method-card" style="border: 1px solid var(--line); border-radius: 12px; padding: 1rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; text-align: center;">
+              <input type="radio" name="gateway" value="applepay" style="display: none;">
+              <i class="fa-brands fa-apple-pay" style="font-size: 2.2rem; color: #000;"></i>
+            </label>
+            <label class="payment-method-card" style="border: 1px solid var(--line); border-radius: 12px; padding: 1rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; text-align: center;">
+              <input type="radio" name="gateway" value="paypal" style="display: none;">
+              <i class="fa-brands fa-paypal" style="font-size: 2rem; color: #00457C;"></i>
+            </label>
+            <label class="payment-method-card" style="border: 1px solid var(--line); border-radius: 12px; padding: 1rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; text-align: center;">
+              <input type="radio" name="gateway" value="visa" style="display: none;">
+              <i class="fa-brands fa-cc-visa" style="font-size: 2rem; color: #1434CB;"></i>
+            </label>
+            <label class="payment-method-card" style="border: 1px solid var(--line); border-radius: 12px; padding: 1rem; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 0.5rem; text-align: center;">
+              <input type="radio" name="gateway" value="mastercard" style="display: none;">
+              <i class="fa-brands fa-cc-mastercard" style="font-size: 2rem; color: #EB001B;"></i>
+            </label>
+          {% endif %}
+
+        </div>
+      </div>
+
+      <div style="background: rgba(15, 118, 110, 0.05); border: 1px solid rgba(15, 118, 110, 0.2); padding: 1rem; border-radius: 12px; color: var(--primary); display: flex; gap: 1rem; align-items: center;">
+        <i class="fa-solid fa-lock" style="font-size: 1.5rem;"></i>
+        <div>
+          <strong style="display: block;">Secured Sandbox Environment</strong>
+          <span style="font-size: 0.8rem;">Clicking Pay will simulate a successful transaction across the selected gateway.</span>
+        </div>
+      </div>
+
+      <style>
+        .payment-actions { display: flex; gap: 1rem; margin-top: 1rem; }
+        .payment-btn-fail { width: 30%; padding: 1.2rem; font-size: 1.1rem; border-radius: 14px; background: transparent; border: 1px solid var(--line); color: var(--text); }
+        .payment-btn-pay { width: 70%; padding: 1.2rem; font-size: 1.1rem; border-radius: 14px; }
+        @media (max-width: 500px) {
+          .payment-actions { flex-direction: column; }
+          .payment-btn-fail, .payment-btn-pay { width: 100%; }
+        }
+      </style>
+      <div class="payment-actions">
+        <button type="submit" name="action" value="fail" class="btn ripple payment-btn-fail">
+          <i class="fa-solid fa-xmark"></i> Fail
+        </button>
+        <button type="submit" name="action" value="pay" class="primary-btn ripple payment-btn-pay">
+          <i class="fa-solid fa-shield-check"></i> Authorize & Pay {{ order.grand_total |localize_price:request }}
+        </button>
+      </div>
+    </form>
+  </div>
+</section>
+
+<script>
+  // Simple JS to handle UI selection
+  const cards = document.querySelectorAll('.payment-method-card');
+  cards.forEach(card => {
+    card.addEventListener('click', () => {
+      cards.forEach(c => {
+        c.style.borderColor = 'var(--line)';
+        c.style.background = 'transparent';
+      });
+      card.style.borderColor = 'var(--primary)';
+      card.style.background = 'rgba(15,118,110,0.05)';
+      card.querySelector('input').checked = true;
+    });
+  });
+</script>
+{% endblock %}

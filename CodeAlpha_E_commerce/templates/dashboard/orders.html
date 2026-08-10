@@ -1,0 +1,13 @@
+{% extends "dashboard/base.html" %}
+{% load localization_tags %}
+{% block title %}Orders | CA-Tech Admin{% endblock %}
+{% block content %}
+<div class="admin-page-head"><div><span class="eyebrow">Order Management</span><h1>Orders</h1><p>Approve payments, update fulfillment status, and review customer details.</p></div></div>
+<form class="admin-filter-bar glass" method="get"><input name="q" value="{{ query }}" placeholder="Search order, customer, email, phone"><select name="status"><option value="">All order statuses</option>{% for value,label in status_choices %}<option value="{{ value }}" {% if status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select><select name="payment_status"><option value="">All payment statuses</option>{% for value,label in payment_status_choices %}<option value="{{ value }}" {% if payment_status == value %}selected{% endif %}>{{ label }}</option>{% endfor %}</select><button class="primary-btn compact" type="submit">Filter</button></form>
+<div class="admin-card admin-table">
+  <div class="admin-table-head order"><span>Order</span><span>Customer</span><span>Payment</span><span>Status</span><span>Total</span><span>Actions</span></div>
+  {% for order in page_obj %}
+    <div class="admin-table-row order"><strong>{{ order.order_number }}</strong><span>{{ order.full_name }}<small>{{ order.email }}</small></span><span class="badge">{{ order.get_payment_status_display }}</span><span class="badge ok">{{ order.get_status_display }}</span><span>{{order.grand_total |localize_price:request}}</span><a href="{% url 'dashboard:order_detail' order.id %}">Manage</a></div>
+  {% empty %}<p>No orders found.</p>{% endfor %}
+</div>
+{% endblock %}

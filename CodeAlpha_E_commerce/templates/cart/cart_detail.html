@@ -1,0 +1,27 @@
+{% extends "base/base.html" %}
+{% load localization_tags %}
+{% block title %}Cart | CA-Tech{% endblock %}
+{% block content %}
+<section class="page-hero compact-hero"><div class="container"><span>Cart</span><h1>Your tech bag</h1></div></section>
+<section class="section container cart-layout">
+  <div class="glass cart-table">
+    {% for item in cart.items.all %}
+      <div class="cart-row" data-aos="fade-up">
+        <img src="{{ item.product.primary_image }}" alt="{{ item.product.name }}">
+        <div><h3>{{ item.product.name }}</h3><p>{{ item.variant.value|default:item.product.brand.name }}</p><strong>{{item.unit_price |localize_price:request}}</strong></div>
+        <form action="{% url 'cart:update' item.id %}" method="post" class="qty-form">{% csrf_token %}<input type="number" name="quantity" value="{{ item.quantity }}" min="0" max="99"><button class="icon-btn" aria-label="Update"><i class="fa-solid fa-rotate"></i></button></form>
+        <form action="{% url 'cart:remove' item.id %}" method="post">{% csrf_token %}<button class="icon-btn danger" aria-label="Remove"><i class="fa-solid fa-trash"></i></button></form>
+        <strong>{{item.line_total |localize_price:request}}</strong>
+      </div>
+    {% empty %}
+      <div class="empty-state"><i class="fa-solid fa-bag-shopping"></i><h2>Your cart is empty.</h2><a class="primary-btn" href="{% url 'products:list' %}">Start shopping</a></div>
+    {% endfor %}
+  </div>
+  <aside class="summary-card glass">
+    <h2>Order summary</h2>
+    <div><span>Subtotal</span><strong>{{cart.subtotal |localize_price:request}}</strong></div>
+    <div><span>Estimated shipping</span><strong>Calculated at checkout</strong></div>
+    <a class="primary-btn ripple {% if not cart.items.exists %}disabled{% endif %}" href="{% url 'orders:checkout' %}">Checkout</a>
+  </aside>
+</section>
+{% endblock %}

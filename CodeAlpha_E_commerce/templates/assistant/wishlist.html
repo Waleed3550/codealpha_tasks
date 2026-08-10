@@ -1,0 +1,39 @@
+{% extends "base/base.html" %}
+{% load localization_tags %}
+{% block title %}Wishlist | CA-Tech{% endblock %}
+{% block content %}
+<section class="section page-hero compact-hero">
+  <div class="container">
+    <span>Saved items</span>
+    <h1>Your Wishlist</h1>
+    <p>Products you saved for later appear here.</p>
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    {% if items %}
+      <div class="product-grid">
+        {% for item in items %}
+          <article class="product-card">
+            <a class="product-media" href="{{ item.product.get_absolute_url }}"><img src="{{ item.product.primary_image }}" alt="{{ item.product.name }}"></a>
+            <div class="product-body">
+              <div class="product-meta"><span>{{ item.product.brand.name }}</span><span>{{ item.product.category.name }}</span></div>
+              <h3>{{ item.product.name }}</h3>
+              <div class="price-row">
+                <strong>{{item.product.price|localize_price:request}}</strong>
+                <form method="post" action="{% url 'assistant:wishlist_toggle' item.product.id %}">{% csrf_token %}<button class="ghost-btn compact" type="submit">Remove</button></form>
+              </div>
+            </div>
+          </article>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="empty-state glass">
+        <i class="fa-regular fa-heart"></i>
+        <h2>No saved items yet</h2>
+        <p>Use the assistant or product buttons to save items here.</p>
+      </div>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

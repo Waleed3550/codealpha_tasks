@@ -1,0 +1,10 @@
+{% extends "dashboard/base.html" %}
+{% block title %}Settings | CA-Tech Admin{% endblock %}
+{% block content %}
+<div class="admin-page-head"><div><span class="eyebrow">Settings</span><h1>Admin Settings</h1><p>Operational settings overview for store, payments, security, and notifications.</p></div></div>
+<section class="admin-grid two">
+  {% for title, description in settings_groups %}
+    <div class="admin-card"><div class="card-head"><h2>{{ title }}</h2><span>Configured</span></div><p>{{ description }}</p><div class="status-row"><span>Status</span><strong><i class="fa-solid fa-circle-check"></i> Active</strong></div></div>
+  {% endfor %}
+</section>
+{% endblock %}

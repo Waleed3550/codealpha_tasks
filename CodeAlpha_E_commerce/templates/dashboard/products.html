@@ -1,0 +1,27 @@
+{% extends "dashboard/base.html" %}
+{% load localization_tags %}
+{% block title %}Products | CA-Tech Admin{% endblock %}
+{% block content %}
+<div class="admin-page-head"><div><span class="eyebrow">Product Management</span><h1>Products</h1><p>Add, edit, preview, filter, sort, bulk update, and delete catalog products.</p></div><a class="primary-btn" href="{% url 'dashboard:product_add' %}"><i class="fa-solid fa-plus"></i> Add Product</a></div>
+<form class="admin-filter-bar glass" method="get">
+  <input name="q" value="{{ query }}" placeholder="Search name, SKU, brand">
+  <select name="category"><option value="">All categories</option>{% for category in categories %}<option value="{{ category.id }}" {% if active_category == category.id|stringformat:"s" %}selected{% endif %}>{{ category.name }}</option>{% endfor %}</select>
+  <select name="brand"><option value="">All brands</option>{% for brand in brands %}<option value="{{ brand.id }}" {% if active_brand == brand.id|stringformat:"s" %}selected{% endif %}>{{ brand.name }}</option>{% endfor %}</select>
+  <select name="sort"><option value="name" {% if sort == "name" %}selected{% endif %}>Name</option><option value="price" {% if sort == "price" %}selected{% endif %}>Price low</option><option value="-price" {% if sort == "-price" %}selected{% endif %}>Price high</option><option value="stock" {% if sort == "stock" %}selected{% endif %}>Stock</option><option value="-created" {% if sort == "-created" %}selected{% endif %}>Newest</option></select>
+  <button class="primary-btn compact" type="submit">Filter</button>
+</form>
+<form method="post" action="{% url 'dashboard:product_bulk' %}" class="admin-card">{% csrf_token %}
+  <div class="bulk-row"><select name="action"><option value="activate">Activate</option><option value="deactivate">Deactivate</option><option value="delete">Delete</option></select><button class="ghost-btn" type="submit">Apply to selected</button></div>
+  <div class="admin-table">
+    <div class="admin-table-head"><span></span><span>Product</span><span>Category</span><span>Stock</span><span>Price</span><span>Status</span><span>Actions</span></div>
+    {% for product in page_obj %}
+      <div class="admin-table-row">
+        <input type="checkbox" name="selected" value="{{ product.id }}">
+        <div class="product-cell"><img src="{{ product.primary_image }}" alt="{{ product.name }}"><div><strong>{{ product.name }}</strong><small>{{ product.sku }} / {{ product.brand.name }}</small></div></div>
+        <span>{{ product.category.name }}</span><span>{{ product.stock }}</span><span>{{product.price |localize_price:request}}</span><span class="badge {% if product.is_active %}ok{% endif %}">{{ product.is_active|yesno:"Active,Hidden" }}</span>
+        <div class="row-actions"><a href="{{ product.get_absolute_url }}" target="_blank">Preview</a><a href="{% url 'dashboard:product_edit' product.id %}">Edit</a><a href="{% url 'dashboard:product_delete' product.id %}">Delete</a></div>
+      </div>
+    {% empty %}<p>No products found.</p>{% endfor %}
+  </div>
+</form>
+{% endblock %}

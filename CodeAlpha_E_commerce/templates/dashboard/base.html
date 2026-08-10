@@ -1,0 +1,60 @@
+{% load static %}
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Admin Dashboard | CA-Tech{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+  <link rel="stylesheet" href="https://unpkg.com/aos@2.3.1/dist/aos.css">
+  <link rel="stylesheet" href="{% static 'css/app.css' %}">
+  <link rel="stylesheet" href="{% static 'css/assistant.css' %}">
+</head>
+<body class="admin-body">
+  <div class="admin-shell">
+    <aside class="admin-sidebar" data-admin-sidebar>
+      <a class="brand admin-brand" href="{% url 'dashboard:home' %}"><i class="fa-solid fa-microchip"></i><span>CA-Tech Admin</span></a>
+      <nav class="admin-menu">
+        <a href="{% url 'dashboard:home' %}"><i class="fa-solid fa-chart-line"></i><span>Overview</span></a>
+        <a href="{% url 'dashboard:home' %}#analytics"><i class="fa-solid fa-chart-pie"></i><span>Analytics</span></a>
+        <a href="{% url 'dashboard:products' %}"><i class="fa-solid fa-box"></i><span>Products</span></a>
+        <a href="{% url 'dashboard:products' %}"><i class="fa-solid fa-warehouse"></i><span>Inventory</span></a>
+        <a href="{% url 'dashboard:orders' %}"><i class="fa-solid fa-receipt"></i><span>Orders</span></a>
+        <a href="{% url 'dashboard:orders' %}?payment_status=pending"><i class="fa-solid fa-credit-card"></i><span>Payment Approval</span></a>
+        <a href="{% url 'dashboard:taxonomy' %}"><i class="fa-solid fa-layer-group"></i><span>Categories & Brands</span></a>
+        <a href="{% url 'dashboard:customers' %}"><i class="fa-solid fa-users"></i><span>Customers</span></a>
+        <a href="{% url 'dashboard:home' %}#reports"><i class="fa-solid fa-file-lines"></i><span>Sales Reports</span></a>
+        <a href="{% url 'dashboard:home' %}#notifications"><i class="fa-solid fa-bell"></i><span>Notifications</span></a>
+        <a href="{% url 'dashboard:ai_settings' %}"><i class="fa-solid fa-wand-magic-sparkles"></i><span>AI Assistant</span></a>
+        <a href="{% url 'dashboard:settings' %}"><i class="fa-solid fa-gear"></i><span>Settings</span></a>
+        <a href="{% url 'core:home' %}"><i class="fa-solid fa-store"></i><span>Storefront</span></a>
+      </nav>
+    </aside>
+    <section class="admin-main">
+      <header class="admin-topbar glass">
+        <button class="icon-btn" data-sidebar-toggle aria-label="Toggle sidebar"><i class="fa-solid fa-bars"></i></button>
+        <form class="admin-search" action="{% url 'dashboard:products' %}" method="get"><i class="fa-solid fa-magnifying-glass"></i><input name="q" placeholder="Search products, SKU, brands"></form>
+        <div class="admin-top-actions">
+          <button class="icon-btn" data-theme-toggle aria-label="Toggle theme"><i class="fa-solid fa-moon"></i></button>
+          <button class="icon-btn" aria-label="Notifications"><i class="fa-solid fa-bell"></i><span class="cart-count">{{ request.user.notifications.count }}</span></button>
+          <details class="profile-menu"><summary><span class="avatar small">{{ request.user.username|first }}</span><span>{{ request.user.username }}</span></summary><div><a href="{% url 'admin:index' %}">Django admin</a><a href="{% url 'dashboard:settings' %}">Settings</a><form method="post" action="{% url 'accounts:logout' %}">{% csrf_token %}<button type="submit">Logout</button></form></div></details>
+        </div>
+      </header>
+      {% if messages %}<div class="toast-stack">{% for message in messages %}<div class="toast {{ message.tags }}">{{ message }}</div>{% endfor %}</div>{% endif %}
+      {% include "components/ai_assistant.html" %}
+      {% include "components/whatsapp_fab.html" %}
+      <main class="admin-content page-transition">{% block content %}{% endblock %}</main>
+    </section>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="{% static 'js/app.js' %}" defer></script>
+  <script src="{% static 'js/assistant.js' %}" defer></script>
+  <script src="{% static 'js/dashboard.js' %}" defer></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>
