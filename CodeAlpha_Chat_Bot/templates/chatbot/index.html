@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nexus AI Chatbot</title>
+    <!-- CSRF token will be injected via hidden input inside body -->
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Splash Screen -->
+    <div id="splash-screen">
+        <div class="splash-content">
+            <div class="ai-orb splash-orb">
+                <div class="orb-core"></div>
+                <div class="orb-glow"></div>
+                <div class="particles"></div>
+            </div>
+            <h1 class="splash-title">Nexus AI</h1>
+            <p class="splash-subtitle">Initializing Premium Assistant...</p>
+            <div class="loading-bar-container">
+                <div class="loading-bar"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Background Elements -->
+    <div class="bg-shapes">
+        <div class="shape shape-1"></div>
+        <div class="shape shape-2"></div>
+        <div id="mouse-glow"></div>
+    </div>
+    
+    {% csrf_token %}
+    
+    <div class="app-layout">
+        <!-- Sidebar -->
+        <aside class="sidebar" id="app-sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-brand">
+                    <div class="sidebar-logo glowing-ring">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                        </svg>
+                    </div>
+                    <h2>Nexus AI</h2>
+                </div>
+                <button id="close-sidebar-btn" class="icon-btn" aria-label="Close Sidebar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            
+            <div class="sidebar-actions">
+                <button class="new-chat-btn" onclick="clearChat()">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    New Chat
+                </button>
+                <div class="search-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    <input type="text" placeholder="Search chats...">
+                </div>
+            </div>
+            
+            <div class="sidebar-nav">
+                <div class="nav-section">
+                    <h3>📌 Pinned</h3>
+                    <ul class="nav-list">
+                        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg> University Project Pitch</li>
+                    </ul>
+                </div>
+                <div class="nav-section">
+                    <h3>⭐ Favorites</h3>
+                    <ul class="nav-list">
+                        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg> Machine Learning FAQ</li>
+                    </ul>
+                </div>
+                <div class="nav-section">
+                    <h3>🕒 Recent</h3>
+                    <ul class="nav-list">
+                        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg> Deep Learning Basics</li>
+                        <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg> Natural Language Processing</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="sidebar-footer">
+                <button class="footer-btn" id="theme-toggle">
+                    <svg class="sun-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>
+                    <svg class="moon-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>
+                    <span>Toggle Theme</span>
+                </button>
+                <button class="footer-btn" onclick="alert('Settings menu coming soon!')">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                    <span>Settings</span>
+                </button>
+                <button class="footer-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <span>About</span>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <div class="chat-wrapper">
+                <div class="chat-card">
+                    
+                    <header class="chat-header">
+                        <div class="header-left">
+                            <button id="open-sidebar-btn" class="icon-btn" aria-label="Open Sidebar">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+                            </button>
+                            <div class="header-text">
+                                <h2>Nexus AI</h2>
+                                <span class="status-text">
+                                    <span class="online-dot-inline"></span> Online &bull; <span id="current-time">--:--</span>
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="header-right">
+                            <button id="export-btn" class="icon-btn hide" aria-label="Export Chat"></button>
+                            <button id="clear-btn" class="icon-btn" aria-label="Clear Chat" onclick="clearChat()">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                            </button>
+                        </div>
+                    </header>
+                    
+                    <!-- Main AI Identity Orb -->
+                    <div class="orb-identity-wrapper">
+                        <div class="ai-orb" id="main-ai-orb">
+                            <div class="orb-core"></div>
+                            <div class="orb-glow"></div>
+                            <div class="particles"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-viewport">
+                        <div id="welcome-screen" class="welcome-screen">
+                            <h1>Ask me anything</h1>
+                            <h2 class="welcome-subtitle">Your Intelligent FAQ Assistant</h2>
+                            <p class="welcome-desc">Find answers instantly. Powered by Advanced AI.</p>
+                            
+                            <div class="suggestion-grid">
+                                <button class="suggestion-card" onclick="document.getElementById('user-input').value = 'What is AI?'; document.getElementById('user-input').focus();">
+                                    <span class="card-icon">🧠</span>
+                                    <span class="card-text">What is AI?</span>
+                                </button>
+                                <button class="suggestion-card" onclick="document.getElementById('user-input').value = 'Machine Learning'; document.getElementById('user-input').focus();">
+                                    <span class="card-icon">⚙️</span>
+                                    <span class="card-text">Machine Learning</span>
+                                </button>
+                                <button class="suggestion-card" onclick="document.getElementById('user-input').value = 'Deep Learning'; document.getElementById('user-input').focus();">
+                                    <span class="card-icon">🕸️</span>
+                                    <span class="card-text">Deep Learning</span>
+                                </button>
+                                <button class="suggestion-card" onclick="document.getElementById('user-input').value = 'Natural Language Processing'; document.getElementById('user-input').focus();">
+                                    <span class="card-icon">💬</span>
+                                    <span class="card-text">Natural Language Processing</span>
+                                </button>
+                                <button class="suggestion-card" onclick="document.getElementById('user-input').value = 'Artificial Intelligence'; document.getElementById('user-input').focus();">
+                                    <span class="card-icon">🤖</span>
+                                    <span class="card-text">Artificial Intelligence</span>
+                                </button>
+                                <button class="suggestion-card" onclick="document.getElementById('user-input').value = 'Python'; document.getElementById('user-input').focus();">
+                                    <span class="card-icon">🐍</span>
+                                    <span class="card-text">Python</span>
+                                </button>
+                                <button class="suggestion-card" onclick="document.getElementById('user-input').value = 'Django'; document.getElementById('user-input').focus();">
+                                    <span class="card-icon">🚀</span>
+                                    <span class="card-text">Django</span>
+                                </button>
+                                <button class="suggestion-card" onclick="document.getElementById('user-input').value = 'Data Science'; document.getElementById('user-input').focus();">
+                                    <span class="card-icon">📊</span>
+                                    <span class="card-text">Data Science</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <main class="chat-body" id="chat-messages">
+                            <!-- Messages will be injected here -->
+                            
+                            <div class="typing-indicator" id="typing-indicator">
+                                <div class="message-group bot">
+                                    <div class="avatar-wrapper bot-avatar glowing-ring">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                                    </div>
+                                    <div class="message-body">
+                                        <div class="chat-bubble typing-bubble">
+                                            <span></span><span></span><span></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </main>
+                    </div>
+                    
+                    <footer class="chat-footer">
+                        <div id="mic-status" class="mic-status">Listening...</div>
+                        <div class="input-container">
+                            <textarea id="user-input" rows="1" placeholder="Ask anything about our FAQs..."></textarea>
+                            
+                            <div class="input-buttons">
+                                <button id="attach-btn" class="action-btn" aria-label="Attach File">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+                                </button>
+                                <button id="mic-btn" class="action-btn" aria-label="Mic">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+                                </button>
+                                <button id="send-btn" class="action-btn" disabled aria-label="Send">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+                                </button>
+                            </div>
+                        </div>
+                        <div class="char-counter"><span id="char-count">0</span> / 2000</div>
+                    </footer>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Templates for JS -->
+    <template id="message-template">
+        <div class="message-group">
+            <div class="avatar-wrapper glowing-ring"></div>
+            <div class="message-body">
+                <div class="message-content chat-bubble"></div>
+                <div class="message-meta">
+                    <span class="time"></span>
+                    <span class="confidence-badge">High</span>
+                    <button class="copy-btn meta-btn" title="Copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg></button>
+                    <button class="regenerate-btn meta-btn" title="Regenerate"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"></polyline><polyline points="23 20 23 14 17 14"></polyline><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path></svg></button>
+                    <button class="delete-btn meta-btn" title="Delete"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg></button>
+                </div>
+            </div>
+        </div>
+    </template>
+    
+    <template id="date-separator-template">
+        <div class="date-separator">
+            <span class="date-text"></span>
+        </div>
+    </template>
+
+    <!-- Command Palette -->
+    <div id="cmd-palette" class="modal-overlay hide">
+        <div class="cmd-palette-content">
+            <div class="cmd-search">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" id="cmd-input" placeholder="Search commands...">
+                <span class="cmd-esc">ESC</span>
+            </div>
+            <ul class="cmd-list" id="cmd-list">
+                <li data-action="new-chat">New Chat <span class="cmd-shortcut">Ctrl+N</span></li>
+                <li data-action="clear-chat">Clear Chat <span class="cmd-shortcut">Ctrl+L</span></li>
+                <li data-action="toggle-theme">Toggle Theme <span class="cmd-shortcut">Ctrl+D</span></li>
+                <li data-action="export-chat">Export Chat <span class="cmd-shortcut">Ctrl+E</span></li>
+                <li data-action="copy-chat">Copy Entire Chat <span class="cmd-shortcut">Ctrl+Shift+C</span></li>
+                <li data-action="open-settings">Open Settings <span class="cmd-shortcut">Ctrl+,</span></li>
+                <li data-action="focus-input">Focus Input <span class="cmd-shortcut">/</span></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Keyboard Shortcuts Dialog -->
+    <div id="shortcuts-dialog" class="modal-overlay hide">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Keyboard Shortcuts</h3>
+                <button class="icon-btn close-modal-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+            </div>
+            <div class="modal-body shortcuts-grid">
+                <div class="shortcut-item"><span>Command Palette</span><kbd>Ctrl+K</kbd></div>
+                <div class="shortcut-item"><span>Show Shortcuts</span><kbd>?</kbd></div>
+                <div class="shortcut-item"><span>New Chat</span><kbd>Ctrl+N</kbd></div>
+                <div class="shortcut-item"><span>Clear Chat</span><kbd>Ctrl+L</kbd></div>
+                <div class="shortcut-item"><span>Toggle Theme</span><kbd>Ctrl+D</kbd></div>
+                <div class="shortcut-item"><span>Settings</span><kbd>Ctrl+,</kbd></div>
+                <div class="shortcut-item"><span>Focus Input</span><kbd>/</kbd></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Drawer -->
+    <div id="settings-drawer" class="drawer-overlay hide">
+        <div class="drawer-content">
+            <div class="drawer-header">
+                <h3>Settings</h3>
+                <button class="icon-btn close-drawer-btn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg></button>
+            </div>
+            <div class="drawer-body">
+                <div class="setting-group">
+                    <label>Theme</label>
+                    <select id="setting-theme">
+                        <option value="dark">Premium Dark</option>
+                        <option value="light">Premium Light</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>Accent Color</label>
+                    <div class="color-picker-mock">
+                        <div class="color-dot active" style="background:#3b82f6" data-color="blue"></div>
+                        <div class="color-dot" style="background:#10b981" data-color="green"></div>
+                        <div class="color-dot" style="background:#8b5cf6" data-color="purple"></div>
+                        <div class="color-dot" style="background:#f59e0b" data-color="orange"></div>
+                    </div>
+                </div>
+                <div class="setting-group">
+                    <label>Animation Speed</label>
+                    <input type="range" min="1" max="3" value="2" class="range-slider">
+                </div>
+                <div class="setting-group">
+                    <label>Font Size</label>
+                    <select id="setting-font">
+                        <option value="small">Small</option>
+                        <option value="normal" selected>Normal</option>
+                        <option value="large">Large</option>
+                    </select>
+                </div>
+                <div class="setting-group">
+                    <label>Glass Intensity</label>
+                    <input type="range" min="1" max="10" value="5" class="range-slider">
+                </div>
+                <hr style="border:0; border-top:1px solid rgba(255,255,255,0.1); margin: 20px 0;">
+                <button class="footer-btn" onclick="clearChat()" style="width:100%; color:#ef4444;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                    <span>Reset Chat</span>
+                </button>
+                <button class="footer-btn" onclick="document.getElementById('export-btn').click()" style="width:100%;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                    <span>Export Chat</span>
+                </button>
+                <div class="about-text">
+                    Nexus AI v2.0<br>Designed for Excellence.
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="toast-container" class="toast-container"></div>
+
+    <script src="/static/js/script.js"></script>
+    <script>
+        // UI specific logic for Sidebar
+        const sidebar = document.getElementById('app-sidebar');
+        document.getElementById('open-sidebar-btn').addEventListener('click', () => {
+            sidebar.classList.add('mobile-open');
+            sidebar.classList.remove('collapsed');
+        });
+        document.getElementById('close-sidebar-btn').addEventListener('click', () => {
+            sidebar.classList.remove('mobile-open');
+            if(window.innerWidth > 768) {
+                sidebar.classList.add('collapsed');
+            }
+        });
+    </script>
+</body>
+</html>
