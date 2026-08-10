@@ -1,0 +1,16 @@
+SpeechRecognition      # Awaaz sunna
+pyttsx3                # Awaaz bolna
+PyAudio                # Microphone
+pyautogui              # Keyboard/mouse
+pygetwindow            # Window control
+psutil                 # Process control
+pywin32                # Windows system
+pywhatkit              # WhatsApp
+selenium               # Web automation
+wikipedia              # Wikipedia
+requests               # Web requests
+openai                 # ChatGPT
+groq                   # Groq AI (Llama)
+pyjokes                # Jokes
+schedule               # Reminders
+python-dotenv          # API keys

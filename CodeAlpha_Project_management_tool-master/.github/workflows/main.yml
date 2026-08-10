@@ -1,0 +1,79 @@
+name: Nexus Production CI/CD
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test_and_build:
+    runs-on: ubuntu-latest
+    
+    services:
+      postgres:
+        image: postgres:15
+        env:
+          POSTGRES_DB: project_db
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres_password
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:alpine
+        ports:
+          - 6379:6379
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.13'
+
+      - name: Install Backend Dependencies
+        run: |
+          cd backend
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Run Backend Tests
+        env:
+          DB_HOST: localhost
+          REDIS_HOST: localhost
+          SECRET_KEY: test-secret-key
+        run: |
+          cd backend
+          python manage.py test
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
+
+      - name: Install Frontend Dependencies
+        run: |
+          cd frontend
+          npm ci
+
+      - name: Build Next.js
+        run: |
+          cd frontend
+          npm run build
+
+  deploy:
+    needs: test_and_build
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+      - name: Deploy to Production Docker Swarm
+        run: echo "Deployment simulated via GitHub Actions successfully."
