@@ -1,0 +1,2 @@
+# Application log files go here — tracked by git to ensure the directory exists
+# Individual *.log files are excluded via .gitignore

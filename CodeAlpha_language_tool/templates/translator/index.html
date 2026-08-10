@@ -1,0 +1,457 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="LinguaVerse — AI-powered language translation with a stunning 3D interface. Translate across 40+ languages instantly.">
+  <meta name="keywords" content="language translation, AI translator, multilingual, real-time translation">
+  <meta name="author" content="LinguaVerse">
+  <meta name="theme-color" content="#030310">
+  <meta property="og:title" content="LinguaVerse — AI Language Translation">
+  <meta property="og:description" content="Break every language barrier with our AI-powered translation engine.">
+  <meta property="og:type" content="website">
+  <title>LinguaVerse — AI Language Translation</title>
+
+  <!-- Preconnect for performance -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  <link rel="preconnect" href="https://raw.githubusercontent.com" crossorigin>
+
+  <!-- Inter — Apple-quality system font alternative -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap 5 CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <!-- Bootstrap Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="{% static 'css/main.css' %}">
+
+  <!-- Pass Django static URL to JavaScript via data attribute -->
+  <meta name="static-url" content="{% static '' %}">
+  <!-- CSRF token — read by _getCsrfToken() for authenticated POST requests -->
+  <meta name="csrf-token" content="{{ csrf_token }}">
+</head>
+<body>
+
+  <!-- ===== ANIMATED PAGE LOADER ===== -->
+  <div id="page-loader" class="page-loader" aria-hidden="true">
+    <div class="loader-content">
+      <div class="loader-spinner"></div>
+      <div class="loader-brand">Lingua<span>Verse</span></div>
+    </div>
+  </div>
+
+  <!-- ===== THREE.JS BACKGROUND CANVAS ===== -->
+  <canvas id="webgl-canvas" aria-hidden="true"></canvas>
+
+  <!-- CSS Gradient Overlay (adds depth to canvas) -->
+  <div class="bg-gradient-overlay" aria-hidden="true"></div>
+
+  <!-- ===== NAVBAR ===== -->
+  <nav id="navbar" role="navigation" aria-label="Main navigation">
+    <div class="nav-inner">
+      <!-- Brand -->
+      <a href="/" class="brand" aria-label="LinguaVerse Home">
+        <div class="brand-orb" aria-hidden="true">
+          <i class="bi bi-translate"></i>
+        </div>
+        <span class="brand-name">Lingua<span class="brand-accent">Verse</span></span>
+      </a>
+
+      <!-- Nav Right -->
+      <div class="nav-right">
+        <div class="service-status" id="service-status" role="status" aria-live="polite">
+          <div class="status-pulse" id="status-pulse" aria-hidden="true"></div>
+          <span id="status-text">Ready</span>
+        </div>
+        <div class="nav-divider" aria-hidden="true"></div>
+        <button class="icon-btn theme-toggle-btn" id="theme-toggle-btn" type="button" title="Toggle Light/Dark Theme" aria-label="Toggle Theme">
+          <i class="bi bi-moon-stars-fill" id="theme-icon" aria-hidden="true"></i>
+        </button>
+        <button class="icon-btn settings-btn" id="settings-btn" type="button" title="Open Settings" aria-label="Open Settings">
+          <i class="bi bi-gear-fill" aria-hidden="true"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ===== MAIN CONTENT ===== -->
+  <main id="main-content" role="main">
+    <div class="app-wrapper">
+
+      <!-- Hero Header -->
+      <header class="app-header" id="app-header" aria-labelledby="main-heading">
+        <div class="header-badge" id="header-badge" aria-label="Powered by LibreTranslate">
+          <i class="bi bi-stars" aria-hidden="true"></i>
+          <span>Powered by LibreTranslate</span>
+        </div>
+        <h1 class="main-heading" id="main-heading">
+          Break Every
+          <span class="neon-gradient-text" aria-label="Language Barrier">Language Barrier</span>
+        </h1>
+        <p class="main-subtitle" id="main-subtitle">
+          Instant, AI-powered translation across <strong>40+ languages</strong>.
+          <br class="d-none d-md-block">
+          Fast, private, and beautifully designed.
+        </p>
+      </header>
+
+      <!-- ===== GLASS CARD — Main Translator ===== -->
+      <section class="translator-section" aria-label="Language translator">
+        <div class="glass-card" id="translator-card">
+
+          <!-- Card Header Bar -->
+          <div class="card-top-bar">
+            <div class="card-dots" aria-hidden="true">
+              <span class="dot dot-red"></span>
+              <span class="dot dot-yellow"></span>
+              <span class="dot dot-green"></span>
+            </div>
+            <div class="card-title-pill shadow-glow-pill">
+              <span class="live-pulse-dot" aria-hidden="true"></span>
+              <i class="bi bi-translate text-primary"></i>
+              <span>Translation Studio</span>
+              <span class="studio-version-tag">v2.0 PRO</span>
+            </div>
+            <div class="card-stats-group d-none d-sm-flex align-items-center gap-3">
+              <div class="latency-pill" id="latency-pill" title="API Response Latency">
+                <i class="bi bi-speedometer2" aria-hidden="true"></i>
+                <span id="latency-val">-- ms</span>
+              </div>
+              <div class="card-shortcut-hint" aria-label="Keyboard shortcut: Control plus Enter to translate">
+                <kbd>Ctrl</kbd><span>+</span><kbd>↵</kbd>
+              </div>
+            </div>
+          </div>
+
+          <!-- Translator Grid: Source | Controls | Target -->
+          <div class="translator-grid">
+
+            <!-- ===== SOURCE PANEL ===== -->
+            <div class="panel source-panel" id="source-panel">
+
+              <!-- Panel Header: Language Select + Search + Clear -->
+              <div class="panel-header flex-column align-items-stretch gap-2">
+                <div class="d-flex align-items-center justify-content-between w-100 gap-2">
+                  <div class="lang-select-wrapper flex-grow-1" role="group" aria-label="Source language selection">
+                    <span class="lang-flag-badge" id="source-flag" aria-hidden="true">🌐</span>
+                    <select id="source-lang" class="lang-select" aria-label="Select source language">
+                      <option value="auto">Auto Detect</option>
+                      <option value="en" selected>English</option>
+                    </select>
+                    <i class="bi bi-chevron-down lang-select-arrow" aria-hidden="true"></i>
+                  </div>
+                  <button class="icon-btn clear-btn" id="clear-btn" type="button"
+                          title="Clear input" aria-label="Clear source text" tabindex="0">
+                    <i class="bi bi-x-lg" aria-hidden="true"></i>
+                  </button>
+                </div>
+                <!-- Quick Language Pills -->
+                <div class="quick-lang-pills" id="source-pills" role="toolbar" aria-label="Quick source language selection">
+                  <button type="button" class="lang-pill active" data-lang="auto">Auto</button>
+                  <button type="button" class="lang-pill" data-lang="en">EN</button>
+                  <button type="button" class="lang-pill" data-lang="es">ES</button>
+                  <button type="button" class="lang-pill" data-lang="fr">FR</button>
+                  <button type="button" class="lang-pill" data-lang="de">DE</button>
+                </div>
+              </div>
+
+              <!-- Textarea -->
+              <div class="panel-body">
+                <textarea
+                  id="source-text"
+                  class="translation-textarea"
+                  placeholder="Type or paste text here…"
+                  maxlength="5000"
+                  aria-label="Enter text to translate"
+                  spellcheck="true"
+                  autocomplete="off"
+                  autocorrect="off"
+                  autocapitalize="off"
+                  tabindex="0"
+                ></textarea>
+              </div>
+
+              <!-- Panel Footer: Char Counter + Speak + Voice Input -->
+              <div class="panel-footer">
+                <div class="char-counter" id="char-counter" aria-live="polite" aria-label="Character count">
+                  <span id="char-count">0</span>
+                  <span class="char-sep">/</span>
+                  <span>5000</span>
+                </div>
+                <div class="d-flex align-items-center gap-1">
+                  <button class="icon-btn mic-btn" id="mic-btn" type="button"
+                          title="Voice input (Microphone)" aria-label="Start voice recognition" tabindex="0">
+                    <i class="bi bi-mic-fill" id="mic-icon" aria-hidden="true"></i>
+                  </button>
+                  <button class="icon-btn speak-btn" id="speak-source-btn" type="button"
+                          title="Listen to source text" aria-label="Listen to source text" tabindex="0">
+                    <i class="bi bi-volume-up-fill" aria-hidden="true"></i>
+                  </button>
+                </div>
+              </div>
+
+            </div><!-- /.source-panel -->
+
+            <!-- ===== CENTER CONTROLS ===== -->
+            <div class="center-controls" id="center-controls">
+
+              <!-- Swap Button -->
+              <button class="swap-btn" id="swap-btn" type="button"
+                      title="Swap source and target languages"
+                      aria-label="Swap source and target languages" tabindex="0">
+                <i class="bi bi-arrow-left-right" aria-hidden="true"></i>
+              </button>
+
+              <!-- Translate Button -->
+              <button class="translate-btn" id="translate-btn" type="button"
+                      aria-label="Translate text" tabindex="0">
+                <!-- Idle State -->
+                <span class="btn-state btn-state-idle" id="btn-idle">
+                  <i class="bi bi-lightning-charge-fill" aria-hidden="true"></i>
+                  <span>Translate</span>
+                </span>
+                <!-- Loading State -->
+                <span class="btn-state btn-state-loading" id="btn-loading" aria-hidden="true">
+                  <div class="spin-ring" aria-hidden="true"></div>
+                  <span>Translating…</span>
+                </span>
+                <!-- Success State -->
+                <span class="btn-state btn-state-success" id="btn-success" aria-hidden="true">
+                  <i class="bi bi-check-circle-fill" aria-hidden="true"></i>
+                  <span>Done!</span>
+                </span>
+              </button>
+
+            </div><!-- /.center-controls -->
+
+            <!-- ===== TARGET PANEL ===== -->
+            <div class="panel target-panel" id="target-panel">
+
+              <!-- Panel Header: Language Select + Copy + Speak -->
+              <div class="panel-header flex-column align-items-stretch gap-2">
+                <div class="d-flex align-items-center justify-content-between w-100 gap-2">
+                  <div class="lang-select-wrapper flex-grow-1" role="group" aria-label="Target language selection">
+                    <span class="lang-flag-badge" id="target-flag" aria-hidden="true">🇫🇷</span>
+                    <select id="target-lang" class="lang-select" aria-label="Select target language">
+                      <option value="fr" selected>French</option>
+                    </select>
+                    <i class="bi bi-chevron-down lang-select-arrow" aria-hidden="true"></i>
+                  </div>
+                  <div class="target-action-group" role="group" aria-label="Target text actions">
+                    <button class="icon-btn fav-btn" id="fav-btn" type="button"
+                            title="Bookmark translation" aria-label="Bookmark translation" tabindex="0">
+                      <i class="bi bi-star" id="fav-icon" aria-hidden="true"></i>
+                    </button>
+                    <button class="icon-btn pdf-btn" id="pdf-btn" type="button"
+                            title="Download as PDF" aria-label="Download translation as PDF" tabindex="0">
+                      <i class="bi bi-file-earmark-pdf-fill" aria-hidden="true"></i>
+                    </button>
+                    <button class="icon-btn copy-btn" id="copy-btn" type="button"
+                            title="Copy translation" aria-label="Copy translated text" tabindex="0">
+                      <i class="bi bi-copy" id="copy-icon" aria-hidden="true"></i>
+                    </button>
+                    <button class="icon-btn speak-btn" id="speak-target-btn" type="button"
+                            title="Listen to translation" aria-label="Listen to translated text" tabindex="0">
+                      <i class="bi bi-volume-up-fill" aria-hidden="true"></i>
+                    </button>
+                  </div>
+                </div>
+                <!-- Quick Language Pills -->
+                <div class="quick-lang-pills" id="target-pills" role="toolbar" aria-label="Quick target language selection">
+                  <button type="button" class="lang-pill" data-lang="en">EN</button>
+                  <button type="button" class="lang-pill" data-lang="es">ES</button>
+                  <button type="button" class="lang-pill active" data-lang="fr">FR</button>
+                  <button type="button" class="lang-pill" data-lang="de">DE</button>
+                  <button type="button" class="lang-pill" data-lang="zh">ZH</button>
+                </div>
+              </div>
+
+              <!-- Output Area -->
+              <div class="panel-body">
+                <div
+                  class="translation-output"
+                  id="translation-output"
+                  aria-live="polite"
+                  aria-label="Translated text output"
+                  role="region"
+                >
+                  <!-- Placeholder (visible when empty) -->
+                  <div class="output-placeholder" id="output-placeholder">
+                    <div class="placeholder-orb" aria-hidden="true">
+                      <i class="bi bi-chat-quote-fill"></i>
+                    </div>
+                    <p>Your translation appears here</p>
+                    <span class="placeholder-hint">Hit <kbd>Ctrl+↵</kbd> to translate</span>
+                  </div>
+
+                  <!-- Skeleton Loader (visible during translation) -->
+                  <div class="skeleton-loader d-none" id="skeleton-loader" aria-hidden="true">
+                    <div class="skeleton-line skeleton-w-80"></div>
+                    <div class="skeleton-line skeleton-w-100"></div>
+                    <div class="skeleton-line skeleton-w-60"></div>
+                  </div>
+
+                  <!-- Actual output text -->
+                  <div class="output-text" id="output-text" lang="" aria-label="Translation result"></div>
+                </div>
+              </div>
+
+              <!-- Panel Footer: Detected Language + Char Count -->
+              <div class="panel-footer" id="target-footer">
+                <div class="detected-lang-badge" id="detected-badge" aria-live="polite" style="display:none">
+                  <i class="bi bi-search" aria-hidden="true"></i>
+                  <span>Detected: <strong id="detected-lang-name"></strong></span>
+                </div>
+                <div class="output-char-count" id="output-char-count" aria-live="polite" style="display:none">
+                  <span id="out-chars">0</span> chars
+                </div>
+              </div>
+
+            </div><!-- /.target-panel -->
+
+          </div><!-- /.translator-grid -->
+
+          <!-- Error Banner -->
+          <div class="error-banner" id="error-banner" role="alert" aria-live="assertive" style="display:none">
+            <i class="bi bi-exclamation-triangle-fill" aria-hidden="true"></i>
+            <span id="error-text">An error occurred.</span>
+            <button class="error-dismiss" id="error-dismiss" type="button" aria-label="Dismiss error">
+              <i class="bi bi-x-lg" aria-hidden="true"></i>
+            </button>
+          </div>
+
+        </div><!-- /.glass-card -->
+
+        <!-- Keyboard Hint Row -->
+        <div class="keyboard-hints" aria-label="Keyboard shortcuts">
+          <span><kbd>Ctrl</kbd><kbd>↵</kbd> Translate</span>
+          <span class="hint-sep" aria-hidden="true">·</span>
+          <span><kbd>Tab</kbd> Navigate</span>
+          <span class="hint-sep" aria-hidden="true">·</span>
+          <span><kbd>Esc</kbd> Clear</span>
+        </div>
+
+      </section><!-- /.translator-section -->
+
+      <!-- ===== HISTORY & FAVORITES DRAWER SECTION ===== -->
+      <section class="drawer-section" id="drawer-section" aria-label="Translation history and favorites">
+        <div class="glass-card drawer-card">
+          <div class="drawer-header">
+            <div class="drawer-tabs" role="tablist">
+              <button class="drawer-tab active" id="tab-history" role="tab" aria-selected="true" aria-controls="panel-history">
+                <i class="bi bi-clock-history" aria-hidden="true"></i>
+                <span>Recent History</span>
+                <span class="badge-count" id="history-count">0</span>
+              </button>
+              <button class="drawer-tab" id="tab-favorites" role="tab" aria-selected="false" aria-controls="panel-favorites">
+                <i class="bi bi-star-fill" aria-hidden="true"></i>
+                <span>Favorites</span>
+                <span class="badge-count" id="favorites-count">0</span>
+              </button>
+            </div>
+            <button class="clear-history-btn" id="clear-drawer-btn" type="button" title="Clear list">
+              <i class="bi bi-trash3-fill" aria-hidden="true"></i>
+              <span>Clear</span>
+            </button>
+          </div>
+          <div class="drawer-body">
+            <div class="drawer-tab-content active" id="panel-history" role="tabpanel">
+              <div class="drawer-list" id="history-list"></div>
+            </div>
+            <div class="drawer-tab-content" id="panel-favorites" role="tabpanel" style="display:none;">
+              <div class="drawer-list" id="favorites-list"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div><!-- /.app-wrapper -->
+  </main>
+
+  <!-- ===== FOOTER ===== -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="footer-inner">
+      <div class="footer-brand">
+        <i class="bi bi-translate" aria-hidden="true"></i>
+        <span>LinguaVerse</span>
+      </div>
+      <p class="footer-note">
+        Built with Django &amp; LibreTranslate &middot; Backend connects in Part 3
+      </p>
+    </div>
+  </footer>
+
+  <!-- ===== SETTINGS MODAL ===== -->
+  <div class="modal fade" id="settingsModal" tabindex="-1" aria-labelledby="settingsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content glass-card p-4">
+        <div class="modal-header border-0 pb-0">
+          <h5 class="modal-title font-heading fw-bold d-flex align-items-center gap-2" id="settingsModalLabel">
+            <i class="bi bi-sliders text-primary"></i> Application Settings
+          </h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body py-4 d-flex flex-column gap-3">
+          <div class="d-flex align-items-center justify-content-between">
+            <div>
+              <div class="fw-semibold">Auto-Translate on Type</div>
+              <div class="text-muted small">Translate automatically 500ms after typing stops</div>
+            </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="setting-autotranslate">
+            </div>
+          </div>
+          <div class="d-flex align-items-center justify-content-between">
+            <div>
+              <div class="fw-semibold">Save History</div>
+              <div class="text-muted small">Store translation history locally in browser</div>
+            </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="setting-savehistory" checked>
+            </div>
+          </div>
+          <div class="d-flex align-items-center justify-content-between">
+            <div>
+              <div class="fw-semibold">3D Earth Animations</div>
+              <div class="text-muted small">Enable WebGL background graphics</div>
+            </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="setting-3d" checked>
+            </div>
+          </div>
+          <div class="d-flex align-items-center justify-content-between">
+            <div>
+              <div class="fw-semibold">Reduced Motion</div>
+              <div class="text-muted small">Reduce page transitions and animations</div>
+            </div>
+            <div class="form-check form-switch">
+              <input class="form-check-input" type="checkbox" id="setting-reducedmotion">
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer border-0 pt-0">
+          <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== TOAST CONTAINER ===== -->
+  <div id="toast-container" aria-live="polite" role="status"></div>
+
+  <!-- ===== CDN SCRIPTS (Deferred for fast FCP) ===== -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.134.0/build/three.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js" defer></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" defer></script>
+
+  <!-- ===== APP SCRIPT ===== -->
+  <script src="{% static 'js/app.js' %}" defer></script>
+
+</body>
+</html>
